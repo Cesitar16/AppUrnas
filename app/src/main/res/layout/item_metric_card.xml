@@ -1,49 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="1"
     android:orientation="vertical"
-    android:background="#1AFFFFFF"
+    android:gravity="center"
     android:padding="12dp"
     android:layout_margin="4dp"
-    android:gravity="center"
-    android:clipToOutline="true"
-    android:backgroundTint="@android:color/transparent">
+    android:background="#1FFFFFFF"
+    android:clipToOutline="true">
 
-    <!-- Ícono métrico -->
-    <ImageView
-        android:id="@+id/iconMetric"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        app:tint="@color/colorTextLight"
-        android:layout_marginBottom="4dp"
-        android:src="@android:drawable/ic_menu_manage"
-        android:contentDescription="@string/app_name" />
-
-    <!-- Etiqueta de la métrica -->
     <TextView
-        android:id="@+id/labelMetric"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Total de urnas"
-        android:textColor="@color/colorTextLight"
-        android:textSize="13sp"
+        android:id="@+id/txtMetricValue"
+        android:text="0"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
         android:textStyle="bold"
-        android:gravity="center"
-        android:layout_marginBottom="2dp" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
-    <!-- Valor de la métrica -->
     <TextView
-        android:id="@+id/valueMetric"
+        android:id="@+id/txtMetricLabel"
+        android:text="Métrica"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="12sp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="240"
-        android:textColor="@color/colorTextLight"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:gravity="center" />
-
+        android:layout_height="wrap_content" />
 </LinearLayout>
