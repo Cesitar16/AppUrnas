@@ -9,7 +9,7 @@
     android:background="@drawable/fondo_login_app"
     tools:context=".ui.HomeActivity">
 
-    <!-- Capa semitransparente -->
+    <!-- Fondo oscuro semi-transparente -->
     <View
         android:id="@+id/overlay"
         android:layout_width="match_parent"
@@ -27,9 +27,9 @@
 
         <LinearLayout
             android:id="@+id/mainContainer"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
             <!-- Encabezado -->
             <LinearLayout
@@ -50,9 +50,9 @@
                     android:textSize="22sp" />
 
                 <LinearLayout
+                    android:orientation="horizontal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
                     android:gravity="center">
 
                     <ImageView
@@ -70,8 +70,7 @@
                 </LinearLayout>
             </LinearLayout>
 
-
-            <!-- Botón nueva urna -->
+            <!-- Botón Nueva Urna -->
             <Button
                 android:id="@+id/btnNuevaUrna"
                 android:layout_width="wrap_content"
@@ -86,31 +85,27 @@
                 android:fontFamily="sans-serif-medium"
                 android:layout_gravity="end" />
 
-            <!-- Título -->
+            <!-- Título Dashboard -->
             <TextView
                 android:id="@+id/txtGestion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Gestión de Urnas"
+                android:text="Dashboard de Urnas"
                 android:textColor="@color/colorTextLight"
                 android:textSize="26sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Tarjetas métricas -->
+            <!-- Tarjetas métricas dinámicas -->
             <LinearLayout
+                android:id="@+id/dashboardContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:weightSum="4"
                 android:gravity="center"
-                android:layout_marginBottom="20dp">
-
-                <include layout="@layout/item_metric_card" />
-                <include layout="@layout/item_metric_card" />
-                <include layout="@layout/item_metric_card" />
-                <include layout="@layout/item_metric_card" />
-            </LinearLayout>
+                android:weightSum="4"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="8dp"/>
 
             <!-- Campo de búsqueda -->
             <LinearLayout
@@ -142,11 +137,12 @@
             </LinearLayout>
 
             <!-- Lista de urnas -->
-            <LinearLayout
-                android:id="@+id/listaUrnas"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewUrnas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical" />
+                android:nestedScrollingEnabled="false"
+                android:clipToPadding="false"/>
 
         </LinearLayout>
     </ScrollView>
