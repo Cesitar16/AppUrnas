@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/black"
     tools:context=".ui.MainActivity">
 
     <!-- Imagen de fondo -->
@@ -23,41 +23,40 @@
         android:layout_height="match_parent"
         android:background="@color/black_overlay" />
 
-    <!-- Contenido principal -->
+    <!-- Contenedor principal -->
     <LinearLayout
         android:id="@+id/loginContainer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="32dp"
-        android:gravity="center"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        android:gravity="center_horizontal"
+        android:paddingHorizontal="32dp"
+        android:paddingVertical="48dp">
 
         <!-- Logo -->
         <ImageView
             android:id="@+id/logoImage"
             android:layout_width="wrap_content"
-            android:layout_height="200dp"
-            android:layout_marginBottom="12dp"
+            android:layout_height="160dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/logo_escala_ajuste_pesomenos"
             android:contentDescription="@string/app_name"
-            android:src="@drawable/logo_escala_ajuste" />
+            android:adjustViewBounds="true" />
 
-        <!-- Texto Bienvenida -->
+        <!-- Texto de bienvenida -->
         <TextView
             android:id="@+id/txtWelcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Bienvenido"
-            android:textSize="28sp"
+            android:textSize="26sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"
             android:textColor="@color/colorTextLight"
-            android:layout_marginBottom="28dp" />
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp" />
 
-        <!-- Email -->
+        <!-- Campo: correo electrónico -->
         <EditText
             android:id="@+id/inputEmail"
             android:layout_width="match_parent"
@@ -72,7 +71,7 @@
             android:padding="14dp"
             android:layout_marginBottom="16dp" />
 
-        <!-- Contraseña -->
+        <!-- Campo: contraseña -->
         <EditText
             android:id="@+id/inputPassword"
             android:layout_width="match_parent"
@@ -85,9 +84,9 @@
             android:textColor="@color/colorTextLight"
             android:backgroundTint="@color/colorTextLight"
             android:padding="14dp"
-            android:layout_marginBottom="28dp" />
+            android:layout_marginBottom="24dp" />
 
-        <!-- Botón login -->
+        <!-- Botón: iniciar sesión -->
         <Button
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
@@ -99,7 +98,7 @@
             android:textAllCaps="false"
             android:padding="14dp" />
 
-        <!-- Texto de crear cuenta -->
+        <!-- Enlace: crear cuenta -->
         <TextView
             android:id="@+id/txtCreateAccount"
             android:layout_width="wrap_content"
@@ -108,9 +107,9 @@
             android:textAlignment="center"
             android:textColor="@color/colorTextLight"
             android:fontFamily="sans-serif"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="18dp"
             android:textSize="15sp" />
 
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

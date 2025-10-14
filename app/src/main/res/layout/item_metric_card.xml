@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    android:background="#1AFFFFFF"
+    android:padding="12dp"
+    android:layout_margin="4dp"
+    android:gravity="center"
+    android:clipToOutline="true"
+    android:backgroundTint="@android:color/transparent">
+
+    <!-- Ícono métrico -->
+    <ImageView
+        android:id="@+id/iconMetric"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:tint="@color/colorTextLight"
+        android:layout_marginBottom="4dp"
+        android:src="@android:drawable/ic_menu_manage"
+        android:contentDescription="@string/app_name" />
+
+    <!-- Etiqueta de la métrica -->
+    <TextView
+        android:id="@+id/labelMetric"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Total de urnas"
+        android:textColor="@color/colorTextLight"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="2dp" />
+
+    <!-- Valor de la métrica -->
+    <TextView
+        android:id="@+id/valueMetric"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="240"
+        android:textColor="@color/colorTextLight"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:gravity="center" />
+
+</LinearLayout>

@@ -2,97 +2,65 @@ package com.example.prueba2appurnas.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Patterns
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.prueba2appurnas.api.RetrofitClient
+import com.example.prueba2appurnas.api.TokenManager
 import com.example.prueba2appurnas.databinding.ActivityRegisterBinding
-import kotlinx.coroutines.Dispatchers
+import com.example.prueba2appurnas.model.SignupRequest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import java.io.OutputStreamWriter
-import java.net.HttpURLConnection
-import java.net.URL
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
+    private lateinit var tokenManager: TokenManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        tokenManager = TokenManager(this)
+
         binding.btnRegister.setOnClickListener {
-            val username = binding.inputUsername.text.toString().trim()
+            val name = binding.inputUsername.text.toString().trim()
             val email = binding.inputEmail.text.toString().trim()
             val password = binding.inputPassword.text.toString().trim()
             val confirmPassword = binding.inputConfirmPassword.text.toString().trim()
 
-            // Validaciones
-            when {
-                username.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty() -> {
-                    showToast("Por favor completa todos los campos")
-                }
-                !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                    showToast("Ingresa un correo válido (con @ y dominio)")
-                }
-                password != confirmPassword -> {
-                    showToast("Las contraseñas no coinciden")
-                }
-                else -> {
-                    registerUser(username, email, password)
-                }
+            if (name.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+                Toast.makeText(this, "Completa todos los campos", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            if (password != confirmPassword) {
+                Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            registerUser(name, email, password)
         }
     }
 
-    private fun registerUser(username: String, email: String, password: String) {
-        val url = "https://backend-descansos-del-recuerdo-spa.onrender.com/auth/register"
-
-        lifecycleScope.launch(Dispatchers.IO) {
+    private fun registerUser(name: String, email: String, password: String) {
+        lifecycleScope.launch {
             try {
-                val connection = (URL(url).openConnection() as HttpURLConnection).apply {
-                    requestMethod = "POST"
-                    doOutput = true
-                    setRequestProperty("Content-Type", "application/json; charset=UTF-8")
-                }
+                val api = RetrofitClient.getAuthService(this@RegisterActivity)
+                val response = api.signup(SignupRequest(name, email, password))
 
-                // JSON con rol por defecto "cliente"
-                val body = JSONObject().apply {
-                    put("username", username)
-                    put("email", email)
-                    put("password", password)
-                    put("rol", "cliente")
-                }
-
-                OutputStreamWriter(connection.outputStream).use {
-                    it.write(body.toString())
-                    it.flush()
-                }
-
-                val responseCode = connection.responseCode
-                withContext(Dispatchers.Main) {
-                    if (responseCode in 200..299) {
-                        showToast("Registro exitoso")
-                        // Redirigir al login
-                        startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
+                if (response.isSuccessful) {
+                    response.body()?.let {
+                        tokenManager.saveToken(it.authToken)
+                        startActivity(Intent(this@RegisterActivity, HomeActivity::class.java))
                         finish()
-                    } else {
-                        showToast("Error al registrar (${connection.responseMessage})")
                     }
+                } else {
+                    Toast.makeText(this@RegisterActivity, "Error al crear la cuenta", Toast.LENGTH_SHORT).show()
                 }
-                connection.disconnect()
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    showToast("Error de conexión: ${e.localizedMessage}")
-                }
+                Toast.makeText(this@RegisterActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
-    }
-
-    private fun showToast(msg: String) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
 }
