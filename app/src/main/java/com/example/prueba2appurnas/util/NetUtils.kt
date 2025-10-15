@@ -6,6 +6,7 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.example.prueba2appurnas.api.ApiConfig
 import com.example.prueba2appurnas.api.TokenManager
 import com.example.prueba2appurnas.model.ImageUrl
+import com.example.prueba2appurnas.model.UrlObject
 
 object NetUtils {
 
@@ -34,28 +35,35 @@ object NetUtils {
     fun buildAbsoluteUrl(imageUrl: ImageUrl?): String? {
         if (imageUrl == null) return null
 
-        val candidates = buildList {
-            imageUrl.path?.let { add(it) }
+        val candidates = LinkedHashSet<String>()
+        imageUrl.path?.let { candidates.add(it) }
+        imageUrl.name?.takeIf { isLikelyUrlCandidate(it) }?.let { candidates.add(it) }
 
-            val meta = imageUrl.meta
-            if (meta != null) {
-                val possibleKeys = listOf(
-                    "url",
-                    "download_url",
-                    "downloadURL",
-                    "signed_url",
-                    "signedUrl",
-                    "public_url",
-                    "publicUrl"
-                )
-
-                possibleKeys.forEach { key ->
-                    (meta[key] as? String)?.let { add(it) }
+        imageUrl.meta?.let { meta ->
+            collectMetaCandidates(meta).forEach { candidate ->
+                if (candidate.isNotBlank()) {
+                    candidates.add(candidate)
                 }
             }
         }
 
         return candidates.firstNotNullOfOrNull { buildAbsoluteUrl(it) }
+    }
+
+    fun buildAbsoluteUrl(urlObject: UrlObject?): String? {
+        return urlObject?.url?.let { buildAbsoluteUrl(it) }
+    }
+
+    fun glideModelOrNull(context: Context, imageUrl: ImageUrl?): Any? {
+        return buildAbsoluteUrl(imageUrl)?.let { glideModelWithAuth(context, it) }
+    }
+
+    fun glideModelOrNull(context: Context, pathOrUrl: String?): Any? {
+        return buildAbsoluteUrl(pathOrUrl)?.let { glideModelWithAuth(context, it) }
+    }
+
+    fun glideModelOrNull(context: Context, urlObject: UrlObject?): Any? {
+        return buildAbsoluteUrl(urlObject)?.let { glideModelWithAuth(context, it) }
     }
 
     fun glideModelWithAuth(context: Context, absoluteUrl: String): Any {
@@ -70,5 +78,57 @@ object NetUtils {
         } else {
             absoluteUrl
         }
+    }
+
+    private fun collectMetaCandidates(node: Any?, keyHint: String? = null): Sequence<String> {
+        return when (node) {
+            is String -> {
+                val keyMatches = keyHint?.let {
+                    it.contains("url", ignoreCase = true) || it.contains("path", ignoreCase = true)
+                } ?: false
+
+                if (keyMatches || isLikelyUrlCandidate(node)) {
+                    sequenceOf(node)
+                } else {
+                    emptySequence()
+                }
+            }
+
+            is Map<*, *> -> {
+                node.entries.asSequence().flatMap { entry ->
+                    val key = entry.key?.toString()
+                    val combinedKey = if (!keyHint.isNullOrBlank()) {
+                        "$keyHint.$key"
+                    } else {
+                        key
+                    }
+                    collectMetaCandidates(entry.value, combinedKey)
+                }
+            }
+
+            is Iterable<*> -> node.asSequence().flatMap { item ->
+                collectMetaCandidates(item, keyHint)
+            }
+
+            is Array<*> -> node.asSequence().flatMap { item ->
+                collectMetaCandidates(item, keyHint)
+            }
+
+            else -> emptySequence()
+        }
+    }
+
+    private fun isLikelyUrlCandidate(value: String): Boolean {
+        val trimmed = value.trim()
+        if (trimmed.isEmpty()) return false
+        if (trimmed.startsWith("http", ignoreCase = true)) return true
+        if (trimmed.startsWith("/")) return true
+
+        val lower = trimmed.lowercase()
+        if (lower.startsWith("vault/")) return true
+        if (lower.startsWith("uploads/")) return true
+        if (lower.startsWith("storage/")) return true
+
+        return trimmed.contains('.')
     }
 }

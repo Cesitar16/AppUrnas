@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Prueba2AppUrnas</string>
+    <string name="profile_title">Perfil del usuario</string>
+    <string name="profile_name_label">Nombre</string>
+    <string name="profile_email_label">Correo electrónico</string>
+    <string name="profile_role_label">Rol</string>
+    <string name="profile_retry">Reintentar</string>
+    <string name="profile_close">Cerrar</string>
+    <string name="profile_error_generic">No fue posible cargar tu perfil.</string>
+    <string name="profile_error_status">Error al cargar el perfil (%1$d)</string>
+    <string name="profile_error_empty">No se encontró información del usuario.</string>
+    <string name="profile_unknown">Desconocido</string>
 </resources>

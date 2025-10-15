@@ -68,10 +68,8 @@ class UrnaDetailActivity : AppCompatActivity() {
         Log.d("UrnaDetailActivity", "🟢 Urna recibida: ${urna.name} (ID: ${urna.id})")
 
         // Mostrar imagen principal
-        val full = NetUtils.buildAbsoluteUrl(urna.image_url)
-        val model = full?.let { NetUtils.glideModelWithAuth(this, it) }
         Glide.with(this)
-            .load(model)
+            .load(NetUtils.glideModelOrNull(this, urna.image_url))
             .transition(DrawableTransitionOptions.withCrossFade(400))
             .placeholder(R.drawable.bg_image_border)
             .error(R.drawable.bg_image_border)
@@ -111,9 +109,9 @@ class UrnaDetailActivity : AppCompatActivity() {
                     val images = response.body()?.filter { it.urna_id == urnaId } ?: emptyList()
 
                     if (images.isNotEmpty()) {
-                        val adapter = UrnaImageAdapter(images) { imageUrl ->
+                        val adapter = UrnaImageAdapter(images) { imageModel ->
                             Glide.with(this@UrnaDetailActivity)
-                                .load(imageUrl)
+                                .load(imageModel)
                                 .transition(DrawableTransitionOptions.withCrossFade(400))
                                 .centerCrop()
                                 .into(imageUrna)

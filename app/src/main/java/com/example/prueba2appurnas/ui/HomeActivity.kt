@@ -2,6 +2,7 @@ package com.example.prueba2appurnas.ui
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -20,6 +21,7 @@ class HomeActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var dashboardContainer: LinearLayout
+    private lateinit var btnProfile: Button
     private lateinit var adapter: UrnaAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,8 +30,13 @@ class HomeActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerViewUrnas)
         dashboardContainer = findViewById(R.id.dashboardContainer)
+        btnProfile = findViewById(R.id.btnProfile)
 
         recyclerView.layoutManager = LinearLayoutManager(this)
+
+        btnProfile.setOnClickListener {
+            ProfileFragment().show(supportFragmentManager, ProfileFragment.TAG)
+        }
 
         fetchUrnas()
     }

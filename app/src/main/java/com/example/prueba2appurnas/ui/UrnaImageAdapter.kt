@@ -27,8 +27,7 @@ class UrnaImageAdapter(
 
     override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
         val image = images[position]
-        val full  = NetUtils.buildAbsoluteUrl(image.url?.url)
-        val model = full?.let { NetUtils.glideModelWithAuth(holder.itemView.context, it) }
+        val model = NetUtils.glideModelOrNull(holder.itemView.context, image.url)
 
         Glide.with(holder.itemView.context)
             .load(model)

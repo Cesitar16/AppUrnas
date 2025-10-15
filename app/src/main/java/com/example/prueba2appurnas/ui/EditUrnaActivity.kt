@@ -11,6 +11,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.prueba2appurnas.R
+import com.example.prueba2appurnas.api.ApiConfig
 import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.api.UrnaService
 import com.example.prueba2appurnas.model.ImageUrl
@@ -91,11 +92,8 @@ class EditUrnaActivity : AppCompatActivity() {
         etPrice.setText(urna.price?.toString())
         etStock.setText(urna.stock?.toString())
 
-        val full = NetUtils.buildAbsoluteUrl(urna.image_url)
-        val model = full?.let { NetUtils.glideModelWithAuth(this, it) }
-
         Glide.with(this)
-            .load(model)
+            .load(NetUtils.glideModelOrNull(this, urna.image_url))
             .placeholder(R.drawable.bg_image_border)
             .error(R.drawable.bg_image_border)
             .into(ivUrnaImage)
