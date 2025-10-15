@@ -10,8 +10,10 @@ import com.bumptech.glide.Glide
 import com.example.prueba2appurnas.R
 import com.example.prueba2appurnas.model.Urna
 
-class UrnaAdapter(private val urnas: List<Urna>) :
-    RecyclerView.Adapter<UrnaAdapter.UrnaViewHolder>() {
+class UrnaAdapter(
+    private val urnas: List<Urna>,
+    private val onItemClick: (Urna) -> Unit
+) : RecyclerView.Adapter<UrnaAdapter.UrnaViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UrnaViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -21,7 +23,7 @@ class UrnaAdapter(private val urnas: List<Urna>) :
 
     override fun onBindViewHolder(holder: UrnaViewHolder, position: Int) {
         val urna = urnas[position]
-        holder.bind(urna)
+        holder.bind(urna, onItemClick)
     }
 
     override fun getItemCount(): Int = urnas.size
@@ -31,13 +33,19 @@ class UrnaAdapter(private val urnas: List<Urna>) :
         private val txtName: TextView = itemView.findViewById(R.id.txtUrnaName)
         private val txtPrice: TextView = itemView.findViewById(R.id.txtUrnaPrice)
 
-        fun bind(urna: Urna) {
-            txtName.text = urna.name
-            txtPrice.text = "$${urna.price ?: 0.0}"
+        fun bind(urna: Urna, onItemClick: (Urna) -> Unit) {
+            txtName.text = urna.name ?: itemView.context.getString(R.string.placeholder_without_name)
+            txtPrice.text = itemView.context.getString(R.string.placeholder_price, urna.price ?: 0.0)
 
-            urna.image_url?.path?.let {
-                Glide.with(itemView.context).load(it).into(imgUrna)
-            }
+            val imageUrl = urna.mainImageUrl
+            Glide.with(itemView.context)
+                .load(imageUrl)
+                .placeholder(R.drawable.bg_image_border)
+                .error(R.drawable.bg_image_border)
+                .centerCrop()
+                .into(imgUrna)
+
+            itemView.setOnClickListener { onItemClick(urna) }
         }
     }
 }

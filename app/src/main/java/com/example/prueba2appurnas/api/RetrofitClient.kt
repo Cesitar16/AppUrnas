@@ -44,4 +44,8 @@ object RetrofitClient {
         return createClient(ApiConfig.BASE_URL_V1, context).create(ModelService::class.java)
     }
 
+    fun getUrnaImageService(context: Context): UrnaImageService {
+        return createClient(ApiConfig.BASE_URL_V1, context).create(UrnaImageService::class.java)
+    }
+
 }
