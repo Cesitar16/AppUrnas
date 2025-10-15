@@ -12,7 +12,7 @@ import com.example.prueba2appurnas.util.NetUtils
 
 class UrnaImageAdapter(
     private val images: List<UrnaImage>,
-    private val onImageClick: (String) -> Unit
+    private val onImageClick: (Any) -> Unit
 ) : RecyclerView.Adapter<UrnaImageAdapter.ImageViewHolder>() {
 
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -37,7 +37,7 @@ class UrnaImageAdapter(
             .into(holder.imgThumbnail)
 
         holder.itemView.setOnClickListener {
-            full?.let { onImageClick(it) }
+            model?.let { onImageClick(it) }
         }
     }
 

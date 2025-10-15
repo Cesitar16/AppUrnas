@@ -5,6 +5,7 @@ import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.LazyHeaders
 import com.example.prueba2appurnas.api.ApiConfig
 import com.example.prueba2appurnas.api.TokenManager
+import com.example.prueba2appurnas.model.ImageUrl
 
 object NetUtils {
 
@@ -28,6 +29,33 @@ object NetUtils {
             raw.startsWith("/") -> raw.appendToHost()
             else -> ApiConfig.BASE_URL_V1.trimEnd('/') + "/" + raw.trimStart('/')
         }
+    }
+
+    fun buildAbsoluteUrl(imageUrl: ImageUrl?): String? {
+        if (imageUrl == null) return null
+
+        val candidates = buildList {
+            imageUrl.path?.let { add(it) }
+
+            val meta = imageUrl.meta
+            if (meta != null) {
+                val possibleKeys = listOf(
+                    "url",
+                    "download_url",
+                    "downloadURL",
+                    "signed_url",
+                    "signedUrl",
+                    "public_url",
+                    "publicUrl"
+                )
+
+                possibleKeys.forEach { key ->
+                    (meta[key] as? String)?.let { add(it) }
+                }
+            }
+        }
+
+        return candidates.firstNotNullOfOrNull { buildAbsoluteUrl(it) }
     }
 
     fun glideModelWithAuth(context: Context, absoluteUrl: String): Any {

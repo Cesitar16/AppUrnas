@@ -44,7 +44,7 @@ class UrnaAdapter(private val urnas: List<Urna>) :
             txtName.text = urna.name
             txtPrice.text = "$${urna.price ?: 0.0}"
 
-            val full = NetUtils.buildAbsoluteUrl(urna.image_url?.path)
+            val full = NetUtils.buildAbsoluteUrl(urna.image_url)
             val model = full?.let { NetUtils.glideModelWithAuth(itemView.context, it) }
 
             Glide.with(itemView.context)

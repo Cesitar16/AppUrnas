@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.prueba2appurnas.R
+import com.example.prueba2appurnas.api.ApiConfig
 import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.api.UrnaImageService
 import com.example.prueba2appurnas.model.Urna
@@ -67,7 +68,7 @@ class UrnaDetailActivity : AppCompatActivity() {
         Log.d("UrnaDetailActivity", "🟢 Urna recibida: ${urna.name} (ID: ${urna.id})")
 
         // Mostrar imagen principal
-        val full = NetUtils.buildAbsoluteUrl(urna.image_url?.path)
+        val full = NetUtils.buildAbsoluteUrl(urna.image_url)
         val model = full?.let { NetUtils.glideModelWithAuth(this, it) }
         Glide.with(this)
             .load(model)

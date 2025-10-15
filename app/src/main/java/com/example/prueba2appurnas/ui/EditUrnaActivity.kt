@@ -91,7 +91,7 @@ class EditUrnaActivity : AppCompatActivity() {
         etPrice.setText(urna.price?.toString())
         etStock.setText(urna.stock?.toString())
 
-        val full = NetUtils.buildAbsoluteUrl(urna.image_url?.path)
+        val full = NetUtils.buildAbsoluteUrl(urna.image_url)
         val model = full?.let { NetUtils.glideModelWithAuth(this, it) }
 
         Glide.with(this)
