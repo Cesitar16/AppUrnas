@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Prueba2AppUrnas</string>
+    <string name="titulo_principal">DESCANSOS DEL</string>
+    <string name="boton_nueva_urna">+ Nueva Urna</string>
+    <string name="titulo_dashboard">Dashboard de Urnas</string>
+    <string name="hint_buscar_urnas">Buscar urnas por nombre o ID interno</string>
+    <string name="icono_correo">Icono de correo</string>
+    <string name="icono_ubicacion">Icono de ubicación o marcador</string>
+    <string name="icono_busqueda">Icono de búsqueda</string>
 </resources>

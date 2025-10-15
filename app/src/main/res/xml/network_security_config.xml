@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 🔹 Permite tráfico seguro y redirecciones HTTPS -->
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Dominio principal de tu API de Xano -->
+        <domain includeSubdomains="true">x8ki-letl-twmt.n7.xano.io</domain>
+
+        <!-- Google Cloud Storage (donde Xano guarda imágenes del vault) -->
+        <domain includeSubdomains="true">storage.googleapis.com</domain>
+    </domain-config>
+
+    <!-- 🔹 Opcional: permite acceso general si usas otros subdominios o redirecciones -->
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

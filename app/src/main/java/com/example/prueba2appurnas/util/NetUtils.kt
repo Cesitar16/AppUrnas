@@ -8,9 +8,11 @@ import com.example.prueba2appurnas.api.TokenManager
 
 object NetUtils {
 
+    // 🔹 Crea URL completa desde path relativo o absoluto
     fun buildAbsoluteUrl(pathOrUrl: String?): String? {
         if (pathOrUrl.isNullOrBlank()) return null
         val raw = pathOrUrl.trim()
+
         return when {
             raw.startsWith("http", ignoreCase = true) -> raw
             raw.startsWith("/vault/") -> ApiConfig.BASE_HOST.trimEnd('/') + raw
@@ -18,17 +20,23 @@ object NetUtils {
         }
     }
 
+    // 🔹 Crea GlideUrl con header Authorization si el token existe
     fun glideModelWithAuth(context: Context, absoluteUrl: String): Any {
         val token = TokenManager(context).getToken()
-        return if (!token.isNullOrBlank()) {
-            GlideUrl(
-                absoluteUrl,
-                LazyHeaders.Builder()
-                    .addHeader("Authorization", "Bearer $token") // usa aquí el mismo header que tu AuthInterceptor
-                    .build()
-            )
-        } else {
-            absoluteUrl
+
+        // Si el endpoint es público, no añadimos headers
+        if (absoluteUrl.contains("storage.googleapis.com", true) ||
+            token.isNullOrBlank()
+        ) {
+            return absoluteUrl
         }
+
+        // Si el token existe, añadimos Authorization
+        return GlideUrl(
+            absoluteUrl,
+            LazyHeaders.Builder()
+                .addHeader("Authorization", "Bearer $token")
+                .build()
+        )
     }
 }

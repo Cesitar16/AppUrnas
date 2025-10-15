@@ -16,13 +16,13 @@
         android:layout_height="match_parent"
         android:background="#AA000000" />
 
-    <!-- Contenedor con scroll -->
+    <!-- Contenedor principal con scroll -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         android:padding="24dp"
         android:clipToPadding="false"
-        android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Encabezado superior -->
+            <!-- Encabezado -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -45,7 +45,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="DESCANSOS DEL"
+                    android:text="@string/titulo_principal"
                     android:textColor="@color/colorTextLight"
                     android:textStyle="bold"
                     android:textSize="22sp" />
@@ -61,49 +61,45 @@
                         android:layout_height="24dp"
                         android:src="@android:drawable/ic_dialog_email"
                         app:tint="@color/colorTextLight"
-                        android:layout_marginEnd="16dp" />
+                        android:layout_marginEnd="16dp"
+                        android:contentDescription="@string/icono_correo" />
 
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_myplaces"
+                        app:tint="@color/colorTextLight"
+                        android:contentDescription="@string/icono_ubicacion" />
                 </LinearLayout>
             </LinearLayout>
 
             <!-- Botón Nueva Urna -->
-
-            <!-- Título Dashboard -->
-
             <Button
                 android:id="@+id/btnNuevaUrna"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_marginBottom="20dp"
+                android:text="@string/boton_nueva_urna"
+                android:textAllCaps="false"
                 android:paddingHorizontal="20dp"
                 android:paddingVertical="10dp"
-                android:text="+ Nueva Urna"
-                android:textAllCaps="false"
+                android:layout_marginBottom="20dp"
+                app:backgroundTint="#C9A46A"
                 android:textColor="@android:color/white"
-                app:backgroundTint="#C9A46A" />
+                android:fontFamily="sans-serif-medium"
+                android:layout_gravity="end" />
 
-            <Button
-                android:id="@+id/btnProfile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Perfil"
-                android:textAllCaps="false"
-                android:textColor="@android:color/white"
-                app:backgroundTint="#C9A46A" />
-
+            <!-- Título Dashboard -->
             <TextView
                 android:id="@+id/txtGestion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Dashboard de Urnas"
+                android:text="@string/titulo_dashboard"
                 android:textColor="@color/colorTextLight"
-                android:textSize="20sp"
+                android:textSize="26sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="16dp" />
 
             <!-- Tarjetas métricas dinámicas -->
-
             <LinearLayout
                 android:id="@+id/dashboardContainer"
                 android:layout_width="match_parent"
@@ -111,16 +107,17 @@
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:weightSum="4"
-                android:layout_marginBottom="20dp"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginBottom="24dp"
+                android:layout_marginTop="8dp" />
 
             <!-- Campo de búsqueda -->
             <LinearLayout
+                android:id="@+id/searchContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="12dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="16dp"
                 android:gravity="center_vertical"
                 android:background="#1AFFFFFF"
                 android:clipToOutline="true">
@@ -130,26 +127,31 @@
                     android:layout_height="20dp"
                     android:src="@android:drawable/ic_menu_search"
                     app:tint="@color/colorTextLight"
-                    android:layout_marginEnd="8dp" />
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@string/icono_busqueda" />
 
                 <EditText
                     android:id="@+id/inputBuscar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Buscar urnas por nombre o ID interno"
+                    android:hint="@string/hint_buscar_urnas"
                     android:background="@null"
                     android:textColor="@color/colorTextLight"
                     android:textColorHint="#AAA"
-                    android:inputType="text" />
+                    android:inputType="text"
+                    android:autofillHints="none" />
             </LinearLayout>
 
-            <!-- Lista de urnas -->
+            <!-- Lista de urnas debajo del buscador -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewUrnas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="32dp"
                 android:nestedScrollingEnabled="false"
-                android:clipToPadding="false"/>
+                android:overScrollMode="never"
+                android:clipToPadding="false" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

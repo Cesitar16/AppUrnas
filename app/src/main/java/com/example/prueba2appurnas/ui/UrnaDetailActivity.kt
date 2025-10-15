@@ -91,11 +91,13 @@ class UrnaDetailActivity : AppCompatActivity() {
         Log.d("UrnaDetailActivity", "🟢 Urna recibida: ${urna.name} (ID: ${urna.id})")
 
         // Mostrar imagen principal
-        val full = NetUtils.buildAbsoluteUrl(urna.image_url?.path)
+        // Mostrar imagen principal
+        val imagePath = urna.image_url?.path // obtiene el string real
+        val full = NetUtils.buildAbsoluteUrl(imagePath)
         val model = full?.let { NetUtils.glideModelWithAuth(this, it) }
+
         Glide.with(this)
             .load(model)
-            .transition(DrawableTransitionOptions.withCrossFade(400))
             .placeholder(R.drawable.bg_image_border)
             .error(R.drawable.bg_image_border)
             .centerCrop()

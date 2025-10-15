@@ -1,6 +1,7 @@
 package com.example.prueba2appurnas.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -10,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.prueba2appurnas.R
 import com.example.prueba2appurnas.api.RetrofitClient
-import com.example.prueba2appurnas.api.UrnaService
 import com.example.prueba2appurnas.model.Urna
 import retrofit2.Call
 import retrofit2.Callback
@@ -40,17 +40,25 @@ class HomeActivity : AppCompatActivity() {
             override fun onResponse(call: Call<List<Urna>>, response: Response<List<Urna>>) {
                 if (response.isSuccessful) {
                     val urnas = response.body() ?: emptyList()
-                    adapter = UrnaAdapter(urnas)
-                    recyclerView.adapter = adapter
+                    Log.d("HOME_DEBUG", "Recibidas urnas: ${urnas.size}")
 
-                    updateDashboard(urnas)
+                    if (urnas.isNotEmpty()) {
+                        adapter = UrnaAdapter(urnas)
+                        recyclerView.adapter = adapter
+                        updateDashboard(urnas)
+                    } else {
+                        Toast.makeText(this@HomeActivity, "No hay urnas disponibles", Toast.LENGTH_SHORT).show()
+                    }
+
                 } else {
                     Toast.makeText(this@HomeActivity, "Error ${response.code()}", Toast.LENGTH_SHORT).show()
+                    Log.e("HOME_ERROR", "Código HTTP: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<List<Urna>>, t: Throwable) {
                 Toast.makeText(this@HomeActivity, "Error: ${t.message}", Toast.LENGTH_LONG).show()
+                Log.e("HOME_ERROR", "Fallo de red o backend", t)
             }
         })
     }
