@@ -55,7 +55,7 @@
                 android:textColor="#FFFFFF"/>
 
             <EditText
-                android:id="@+id/etUrnaName"
+                android:id="@+id/etName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nombre de la urna"
@@ -65,7 +65,7 @@
                 android:layout_marginBottom="16dp"/>
 
             <EditText
-                android:id="@+id/etShortDescription"
+                android:id="@+id/etShortDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Descripción corta"
@@ -75,7 +75,7 @@
                 android:layout_marginBottom="16dp"/>
 
             <EditText
-                android:id="@+id/etDetailedDescription"
+                android:id="@+id/etDetailedDesc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="top"
@@ -109,7 +109,7 @@
                 android:layout_marginBottom="24dp"/>
 
             <Button
-                android:id="@+id/btnSave"
+                android:id="@+id/btnSaveChanges"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Guardar Cambios"

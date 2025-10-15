@@ -4,13 +4,7 @@ import com.example.prueba2appurnas.model.ImageUrl
 import com.example.prueba2appurnas.model.Urna
 import okhttp3.MultipartBody
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Multipart
-import retrofit2.http.PATCH
-import retrofit2.http.POST
-import retrofit2.http.Part
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface UrnaService {
     @GET("urn")
@@ -24,7 +18,5 @@ interface UrnaService {
 
     @Multipart
     @POST("urn_image")
-    fun uploadImage(
-        @Part image: MultipartBody.Part
-    ): Call<ImageUrl>
+    fun uploadImage(@Part image: MultipartBody.Part): Call<ImageUrl>
 }

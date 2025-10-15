@@ -18,6 +18,10 @@ import com.example.prueba2appurnas.model.UrnaImage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.LazyHeaders
+import com.example.prueba2appurnas.api.TokenManager
+import com.example.prueba2appurnas.util.NetUtils
 
 class UrnaDetailActivity : AppCompatActivity() {
 
@@ -34,6 +38,26 @@ class UrnaDetailActivity : AppCompatActivity() {
     private lateinit var tvPrecio: TextView
     private lateinit var tvColor: TextView
     private lateinit var btnEditar: Button
+
+    private fun buildAbsoluteUrl(pathOrUrl: String?): String? {
+        if (pathOrUrl.isNullOrBlank()) return null
+        return if (pathOrUrl.startsWith("http", true)) pathOrUrl
+        else ApiConfig.BASE_URL_V1.trimEnd('/') + "/" + pathOrUrl.trimStart('/')
+    }
+
+    private fun buildGlideModelWithAuth(context: android.content.Context, absoluteUrl: String): Any {
+        val token = TokenManager(context).getToken()
+        return if (!token.isNullOrBlank()) {
+            GlideUrl(
+                absoluteUrl,
+                LazyHeaders.Builder()
+                    .addHeader("Authorization", "Bearer $token")
+                    .build()
+            )
+        } else {
+            absoluteUrl
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,9 +91,10 @@ class UrnaDetailActivity : AppCompatActivity() {
         Log.d("UrnaDetailActivity", "🟢 Urna recibida: ${urna.name} (ID: ${urna.id})")
 
         // Mostrar imagen principal
-        val imageUrl = urna.image_url?.path?.let { ApiConfig.BASE_URL_V1 + it }
+        val full = NetUtils.buildAbsoluteUrl(urna.image_url?.path)
+        val model = full?.let { NetUtils.glideModelWithAuth(this, it) }
         Glide.with(this)
-            .load(imageUrl)
+            .load(model)
             .transition(DrawableTransitionOptions.withCrossFade(400))
             .placeholder(R.drawable.bg_image_border)
             .error(R.drawable.bg_image_border)
