@@ -1,5 +1,6 @@
 package com.example.prueba2appurnas.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
@@ -32,6 +33,7 @@ class UrnaDetailActivity : AppCompatActivity() {
     private lateinit var tvMaterial: TextView
     private lateinit var tvPrecio: TextView
     private lateinit var tvColor: TextView
+    private lateinit var btnEditar: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,12 +50,12 @@ class UrnaDetailActivity : AppCompatActivity() {
         tvMaterial = findViewById(R.id.tvMaterial)
         tvPrecio = findViewById(R.id.tvPrecio)
         tvColor = findViewById(R.id.tvColor)
+        btnEditar = findViewById(R.id.btnEditar)
 
         recyclerViewImages.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
-        // ✅ Obtener objeto Urna del intent (clave corregida)
-        val urna = intent.getSerializableExtra("urna") as? Urna
+        val urna = intent.getSerializableExtra("urn") as? Urna
 
         if (urna == null) {
             Log.e("UrnaDetailActivity", "⚠️ No se encontró el objeto Urna en el intent")
@@ -62,12 +64,12 @@ class UrnaDetailActivity : AppCompatActivity() {
             return
         }
 
-        // ✅ Log para depuración
         Log.d("UrnaDetailActivity", "🟢 Urna recibida: ${urna.name} (ID: ${urna.id})")
 
         // Mostrar imagen principal
+        val imageUrl = urna.image_url?.path?.let { ApiConfig.BASE_URL_V1 + it }
         Glide.with(this)
-            .load(urna.image_url?.url)
+            .load(imageUrl)
             .transition(DrawableTransitionOptions.withCrossFade(400))
             .placeholder(R.drawable.bg_image_border)
             .error(R.drawable.bg_image_border)
@@ -84,11 +86,17 @@ class UrnaDetailActivity : AppCompatActivity() {
         tvPrecio.text = "$${urna.price ?: 0.0}"
         tvColor.text = "Color ID: ${urna.color_id ?: "-"}"
 
+        btnEditar.setOnClickListener {
+            val intent = Intent(this, EditUrnaActivity::class.java)
+            intent.putExtra("urn", urna)
+            startActivity(intent)
+        }
+
         // Cargar imágenes adicionales (si hay endpoint configurado)
         urna.id?.let { fetchUrnaImages(it) }
     }
 
-    private fun fetchUrnaImages(urnaId: Int) {
+    internal fun fetchUrnaImages(urnaId: Int) {
         urnaImageService = RetrofitClient.createClient(ApiConfig.BASE_URL_V1, this)
             .create(UrnaImageService::class.java)
 

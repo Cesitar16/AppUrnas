@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    private fun createClient(baseUrl: String, context: Context): Retrofit {
+    fun createClient(baseUrl: String, context: Context): Retrofit {
         val tokenManager = TokenManager(context)
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY

@@ -17,11 +17,12 @@
         android:background="#AA000000" />
 
     <!-- Contenedor con scroll -->
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="24dp"
         android:clipToPadding="false"
+        android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -62,29 +63,35 @@
                         app:tint="@color/colorTextLight"
                         android:layout_marginEnd="16dp" />
 
-                    <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@android:drawable/ic_menu_myplaces"
-                        app:tint="@color/colorTextLight" />
                 </LinearLayout>
             </LinearLayout>
 
             <!-- Botón Nueva Urna -->
+
+            <!-- Título Dashboard -->
+
             <Button
                 android:id="@+id/btnNuevaUrna"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="+ Nueva Urna"
-                android:textAllCaps="false"
+                android:layout_gravity="end"
+                android:layout_marginBottom="20dp"
                 android:paddingHorizontal="20dp"
                 android:paddingVertical="10dp"
-                android:layout_marginBottom="20dp"
-                app:backgroundTint="#C9A46A"
+                android:text="+ Nueva Urna"
+                android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:layout_gravity="end" />
+                app:backgroundTint="#C9A46A" />
 
-            <!-- Título Dashboard -->
+            <Button
+                android:id="@+id/btnProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Perfil"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:backgroundTint="#C9A46A" />
+
             <TextView
                 android:id="@+id/txtGestion"
                 android:layout_width="match_parent"
@@ -96,6 +103,7 @@
                 android:layout_marginBottom="12dp" />
 
             <!-- Tarjetas métricas dinámicas -->
+
             <LinearLayout
                 android:id="@+id/dashboardContainer"
                 android:layout_width="match_parent"
@@ -144,5 +152,5 @@
                 android:clipToPadding="false"/>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
