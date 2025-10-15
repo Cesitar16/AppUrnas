@@ -9,103 +9,135 @@
     android:background="@drawable/fondo_login_app"
     tools:context=".ui.HomeActivity">
 
-    <!-- Fondo difuminado -->
+    <!-- Fondo oscuro semi-transparente -->
     <View
         android:id="@+id/overlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#AA000000" />
 
-    <!-- Encabezado: título + dashboard + buscador -->
-    <?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/homeContainer"
+    <!-- Contenedor con scroll -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@color/black">
-
-        <!-- Título superior -->
-        <TextView
-            android:id="@+id/tvHomeTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Panel de Urnas"
-            android:textColor="#E6D6B1"
-            android:textStyle="bold"
-            android:textSize="22sp"
-            android:layout_marginBottom="12dp" />
-
-        <!-- Botón de refrescar -->
-        <Button
-            android:id="@+id/btnRefresh"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Actualizar lista"
-            android:backgroundTint="#B48A60"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="16dp" />
-
-        <!-- Contenedor de métricas -->
-        <LinearLayout
-            android:id="@+id/dashboardContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center"
-            android:weightSum="4"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="4dp" />
-
-        <!-- Línea divisoria -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#555"
-            android:layout_marginBottom="10dp" />
-
-        <!-- Lista de urnas -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewUrnas"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipToPadding="false"
-            android:paddingBottom="8dp"
-            android:scrollbars="vertical" />
-
-    </LinearLayout>
-
-
-    <!-- Botón de refrescar -->
-    <Button
-        android:id="@+id/btnRefresh"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Actualizar"
-        android:backgroundTint="#A67B5B"
-        android:textColor="@android:color/white"
-        app:layout_constraintTop_toBottomOf="@id/headerContainer"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp" />
-
-    <!-- RecyclerView debajo -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewUrnas"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:padding="24dp"
         android:clipToPadding="false"
-        app:layout_constraintTop_toBottomOf="@id/btnRefresh"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="16dp"
-        tools:listitem="@layout/item_urna_card" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
+        <LinearLayout
+            android:id="@+id/mainContainer"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <!-- Encabezado superior -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:id="@+id/txtTitulo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="DESCANSOS DEL"
+                    android:textColor="@color/colorTextLight"
+                    android:textStyle="bold"
+                    android:textSize="22sp" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_myplaces"
+                    app:tint="@color/colorTextLight" />
+            </LinearLayout>
+
+            <!-- 🔸 Botón Nueva Urna -->
+            <Button
+                android:id="@+id/btnNuevaUrna"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ Nueva Urna"
+                android:textAllCaps="false"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="10dp"
+                android:layout_marginBottom="20dp"
+                app:backgroundTint="#C9A46A"
+                android:textColor="@android:color/white"
+                android:layout_gravity="end" />
+
+            <!-- 🔸 Botón de refrescar (para compatibilidad con código) -->
+            <Button
+                android:id="@+id/btnRefresh"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Actualizar lista"
+                app:backgroundTint="#B48A60"
+                android:textColor="@android:color/white"
+                android:elevation="4dp"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Dashboard -->
+            <TextView
+                android:id="@+id/txtGestion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dashboard de Urnas"
+                android:textColor="@color/colorTextLight"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <LinearLayout
+                android:id="@+id/dashboardContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:weightSum="4"
+                android:layout_marginBottom="20dp" />
+
+            <!-- Campo de búsqueda -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:layout_marginBottom="20dp"
+                android:gravity="center_vertical"
+                android:background="#1AFFFFFF"
+                android:clipToOutline="true">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/ic_menu_search"
+                    app:tint="@color/colorTextLight"
+                    android:layout_marginEnd="8dp" />
+
+                <EditText
+                    android:id="@+id/inputBuscar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Buscar urnas por nombre o ID interno"
+                    android:background="@null"
+                    android:textColor="@color/colorTextLight"
+                    android:textColorHint="#AAA"
+                    android:inputType="text" />
+            </LinearLayout>
+
+            <!-- Lista de urnas -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewUrnas"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:clipToPadding="false" />
+
+        </LinearLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
