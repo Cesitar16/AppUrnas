@@ -11,9 +11,21 @@ object NetUtils {
     fun buildAbsoluteUrl(pathOrUrl: String?): String? {
         if (pathOrUrl.isNullOrBlank()) return null
         val raw = pathOrUrl.trim()
+
+        fun String.appendToHost(): String {
+            val normalized = if (startsWith("/")) this else "/$this"
+            return ApiConfig.BASE_HOST.trimEnd('/') + normalized
+        }
+
         return when {
             raw.startsWith("http", ignoreCase = true) -> raw
-            raw.startsWith("/vault/") -> ApiConfig.BASE_HOST.trimEnd('/') + raw
+            raw.startsWith("/vault/", ignoreCase = true) -> raw.appendToHost()
+            raw.startsWith("vault/", ignoreCase = true) -> raw.appendToHost()
+            raw.startsWith("/uploads/", ignoreCase = true) -> raw.appendToHost()
+            raw.startsWith("uploads/", ignoreCase = true) -> raw.appendToHost()
+            raw.startsWith("/storage/", ignoreCase = true) -> raw.appendToHost()
+            raw.startsWith("storage/", ignoreCase = true) -> raw.appendToHost()
+            raw.startsWith("/") -> raw.appendToHost()
             else -> ApiConfig.BASE_URL_V1.trimEnd('/') + "/" + raw.trimStart('/')
         }
     }

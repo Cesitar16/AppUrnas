@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.prueba2appurnas.R
-import com.example.prueba2appurnas.api.ApiConfig
 import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.api.UrnaImageService
 import com.example.prueba2appurnas.model.Urna
@@ -18,9 +17,6 @@ import com.example.prueba2appurnas.model.UrnaImage
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.model.LazyHeaders
-import com.example.prueba2appurnas.api.TokenManager
 import com.example.prueba2appurnas.util.NetUtils
 
 class UrnaDetailActivity : AppCompatActivity() {
@@ -38,26 +34,6 @@ class UrnaDetailActivity : AppCompatActivity() {
     private lateinit var tvPrecio: TextView
     private lateinit var tvColor: TextView
     private lateinit var btnEditar: Button
-
-    private fun buildAbsoluteUrl(pathOrUrl: String?): String? {
-        if (pathOrUrl.isNullOrBlank()) return null
-        return if (pathOrUrl.startsWith("http", true)) pathOrUrl
-        else ApiConfig.BASE_URL_V1.trimEnd('/') + "/" + pathOrUrl.trimStart('/')
-    }
-
-    private fun buildGlideModelWithAuth(context: android.content.Context, absoluteUrl: String): Any {
-        val token = TokenManager(context).getToken()
-        return if (!token.isNullOrBlank()) {
-            GlideUrl(
-                absoluteUrl,
-                LazyHeaders.Builder()
-                    .addHeader("Authorization", "Bearer $token")
-                    .build()
-            )
-        } else {
-            absoluteUrl
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

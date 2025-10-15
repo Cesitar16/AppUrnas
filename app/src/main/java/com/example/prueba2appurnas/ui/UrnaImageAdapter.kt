@@ -8,11 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.prueba2appurnas.R
 import com.example.prueba2appurnas.model.UrnaImage
-import android.content.Context
-import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.model.LazyHeaders
-import com.example.prueba2appurnas.api.TokenManager
-import com.example.prueba2appurnas.api.ApiConfig
 import com.example.prueba2appurnas.util.NetUtils
 
 class UrnaImageAdapter(
@@ -22,24 +17,6 @@ class UrnaImageAdapter(
 
     class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imgThumbnail: ImageView = itemView.findViewById(R.id.imgThumbnail)
-    }
-
-    private fun buildAbsoluteUrl(pathOrUrl: String?): String? {
-        if (pathOrUrl.isNullOrBlank()) return null
-        return if (pathOrUrl.startsWith("http", true)) pathOrUrl
-        else ApiConfig.BASE_URL_V1.trimEnd('/') + "/" + pathOrUrl.trimStart('/')
-    }
-
-    private fun buildGlideModelWithAuth(context: Context, absoluteUrl: String): Any {
-        val token = TokenManager(context).getToken()
-        return if (!token.isNullOrBlank()) {
-            GlideUrl(
-                absoluteUrl,
-                LazyHeaders.Builder()
-                    .addHeader("Authorization", "Bearer $token")
-                    .build()
-            )
-        } else absoluteUrl
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {

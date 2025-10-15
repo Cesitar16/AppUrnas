@@ -11,7 +11,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.prueba2appurnas.R
-import com.example.prueba2appurnas.api.ApiConfig
 import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.api.UrnaService
 import com.example.prueba2appurnas.model.ImageUrl
@@ -23,9 +22,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
-import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.model.LazyHeaders
-import com.example.prueba2appurnas.api.TokenManager
 import com.example.prueba2appurnas.util.NetUtils
 
 class EditUrnaActivity : AppCompatActivity() {
@@ -52,24 +48,6 @@ class EditUrnaActivity : AppCompatActivity() {
                 ivUrnaImage.setImageURI(it)
             }
         }
-    }
-
-    private fun buildAbsoluteUrl(pathOrUrl: String?): String? {
-        if (pathOrUrl.isNullOrBlank()) return null
-        return if (pathOrUrl.startsWith("http", true)) pathOrUrl
-        else ApiConfig.BASE_URL_V1.trimEnd('/') + "/" + pathOrUrl.trimStart('/')
-    }
-
-    private fun buildGlideModelWithAuth(context: android.content.Context, absoluteUrl: String): Any {
-        val token = TokenManager(context).getToken()
-        return if (!token.isNullOrBlank()) {
-            GlideUrl(
-                absoluteUrl,
-                LazyHeaders.Builder()
-                    .addHeader("Authorization", "Bearer $token")
-                    .build()
-            )
-        } else absoluteUrl
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
