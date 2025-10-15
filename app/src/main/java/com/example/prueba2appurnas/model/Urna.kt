@@ -1,10 +1,9 @@
 package com.example.prueba2appurnas.model
 
-import java.io.Serializable
-
 data class Urna(
-    val id: Int?,
-    val name: String?,
+    val id: Int,
+    val internal_id: String?,
+    val name: String,
     val short_description: String?,
     val detailed_description: String?,
     val height: Double?,
@@ -20,9 +19,14 @@ data class Urna(
     val color_id: Int?,
     val material_id: Int?,
     val model_id: Int?,
-    val image_url: UrnaImage?
-) : Serializable
+    val image_url: ImageUrl?
+)
 
 data class ImageUrl(
-    val url: String?
-) : Serializable
+    val access: String?,
+    val path: String?,
+    val name: String?,
+    val type: String?,
+    val size: Int?,
+    val mime: String?
+)

@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    fun createClient(baseUrl: String, context: Context): Retrofit {
+    private fun createClient(baseUrl: String, context: Context): Retrofit {
         val tokenManager = TokenManager(context)
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
@@ -26,7 +26,6 @@ object RetrofitClient {
             .build()
     }
 
-
     // 🔸 API para autenticación
     fun getAuthService(context: Context): AuthService {
         return createClient(ApiConfig.BASE_URL_AUTH, context).create(AuthService::class.java)
@@ -35,10 +34,6 @@ object RetrofitClient {
     // 🔸 API para urnas y demás (grupo v1)
     fun getUrnaService(context: Context): UrnaService {
         return createClient(ApiConfig.BASE_URL_V1, context).create(UrnaService::class.java)
-    }
-
-    fun getColorService(context: Context): ColorService {
-        return createClient(ApiConfig.BASE_URL_V1, context).create(ColorService::class.java)
     }
 
     fun getMaterialService(context: Context): MaterialService {

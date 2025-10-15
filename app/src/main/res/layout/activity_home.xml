@@ -49,14 +49,28 @@
                     android:textStyle="bold"
                     android:textSize="22sp" />
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_myplaces"
-                    app:tint="@color/colorTextLight" />
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_dialog_email"
+                        app:tint="@color/colorTextLight"
+                        android:layout_marginEnd="16dp" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_myplaces"
+                        app:tint="@color/colorTextLight" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- 🔸 Botón Nueva Urna -->
+            <!-- Botón Nueva Urna -->
             <Button
                 android:id="@+id/btnNuevaUrna"
                 android:layout_width="wrap_content"
@@ -70,18 +84,7 @@
                 android:textColor="@android:color/white"
                 android:layout_gravity="end" />
 
-            <!-- 🔸 Botón de refrescar (para compatibilidad con código) -->
-            <Button
-                android:id="@+id/btnRefresh"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Actualizar lista"
-                app:backgroundTint="#B48A60"
-                android:textColor="@android:color/white"
-                android:elevation="4dp"
-                android:layout_marginBottom="20dp" />
-
-            <!-- Dashboard -->
+            <!-- Título Dashboard -->
             <TextView
                 android:id="@+id/txtGestion"
                 android:layout_width="match_parent"
@@ -92,6 +95,7 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="12dp" />
 
+            <!-- Tarjetas métricas dinámicas -->
             <LinearLayout
                 android:id="@+id/dashboardContainer"
                 android:layout_width="match_parent"
@@ -99,7 +103,8 @@
                 android:orientation="horizontal"
                 android:gravity="center"
                 android:weightSum="4"
-                android:layout_marginBottom="20dp" />
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="8dp"/>
 
             <!-- Campo de búsqueda -->
             <LinearLayout
@@ -136,7 +141,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
-                android:clipToPadding="false" />
+                android:clipToPadding="false"/>
 
         </LinearLayout>
     </ScrollView>
