@@ -1,7 +1,9 @@
 package com.example.prueba2appurnas.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -28,6 +30,9 @@ class HomeActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerViewUrnas)
         dashboardContainer = findViewById(R.id.dashboardContainer)
+        findViewById<ImageView>(R.id.imgProfile).setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -40,7 +45,12 @@ class HomeActivity : AppCompatActivity() {
             override fun onResponse(call: Call<List<Urna>>, response: Response<List<Urna>>) {
                 if (response.isSuccessful) {
                     val urnas = response.body() ?: emptyList()
-                    adapter = UrnaAdapter(urnas)
+                    adapter = UrnaAdapter(urnas) { urna ->
+                        val intent = Intent(this@HomeActivity, UrnaDetailActivity::class.java).apply {
+                            putExtra(UrnaDetailActivity.EXTRA_URNA, urna)
+                        }
+                        startActivity(intent)
+                    }
                     recyclerView.adapter = adapter
 
                     updateDashboard(urnas)
@@ -67,7 +77,7 @@ class HomeActivity : AppCompatActivity() {
         val metrics = listOf(
             Pair(totalUrnas.toString(), "Total de urnas"),
             Pair(stockTotal.toString(), "Stock total"),
-            Pair("$${promedioPrecio.toInt()}", "Precio promedio"),
+            Pair(getString(R.string.placeholder_price, promedioPrecio), "Precio promedio"),
             Pair(disponibles.toString(), "Urnas disponibles")
         )
 

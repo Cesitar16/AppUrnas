@@ -28,6 +28,9 @@ class UrnaImageAdapter(
         val image = images[position]
         Glide.with(holder.itemView.context)
             .load(image.url?.url)
+            .placeholder(R.drawable.bg_image_border)
+            .error(R.drawable.bg_image_border)
+            .centerCrop()
             .into(holder.imgThumbnail)
 
         holder.itemView.setOnClickListener {

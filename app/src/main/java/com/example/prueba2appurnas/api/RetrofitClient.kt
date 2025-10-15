@@ -8,16 +8,24 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
 
-    private fun createClient(baseUrl: String, context: Context): Retrofit {
-        val tokenManager = TokenManager(context)
+    private fun createClient(
+        baseUrl: String,
+        context: Context,
+        withAuth: Boolean
+    ): Retrofit {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
-        val client = OkHttpClient.Builder()
+        val clientBuilder = OkHttpClient.Builder()
             .addInterceptor(logging)
-            .addInterceptor(AuthInterceptor(tokenManager))
-            .build()
+
+        if (withAuth) {
+            val tokenManager = TokenManager(context.applicationContext)
+            clientBuilder.addInterceptor(AuthInterceptor(tokenManager))
+        }
+
+        val client = clientBuilder.build()
 
         return Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -28,20 +36,44 @@ object RetrofitClient {
 
     // 🔸 API para autenticación
     fun getAuthService(context: Context): AuthService {
-        return createClient(ApiConfig.BASE_URL_AUTH, context).create(AuthService::class.java)
+        return createClient(
+            baseUrl = ApiConfig.BASE_URL_AUTH,
+            context = context,
+            withAuth = false
+        ).create(AuthService::class.java)
     }
 
     // 🔸 API para urnas y demás (grupo v1)
     fun getUrnaService(context: Context): UrnaService {
-        return createClient(ApiConfig.BASE_URL_V1, context).create(UrnaService::class.java)
+        return createClient(
+            baseUrl = ApiConfig.BASE_URL_V1,
+            context = context,
+            withAuth = true
+        ).create(UrnaService::class.java)
     }
 
     fun getMaterialService(context: Context): MaterialService {
-        return createClient(ApiConfig.BASE_URL_V1, context).create(MaterialService::class.java)
+        return createClient(
+            baseUrl = ApiConfig.BASE_URL_V1,
+            context = context,
+            withAuth = true
+        ).create(MaterialService::class.java)
     }
 
     fun getModelService(context: Context): ModelService {
-        return createClient(ApiConfig.BASE_URL_V1, context).create(ModelService::class.java)
+        return createClient(
+            baseUrl = ApiConfig.BASE_URL_V1,
+            context = context,
+            withAuth = true
+        ).create(ModelService::class.java)
+    }
+
+    fun getUrnaImageService(context: Context): UrnaImageService {
+        return createClient(
+            baseUrl = ApiConfig.BASE_URL_V1,
+            context = context,
+            withAuth = true
+        ).create(UrnaImageService::class.java)
     }
 
 }

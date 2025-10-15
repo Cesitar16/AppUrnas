@@ -1,5 +1,6 @@
 package com.example.prueba2appurnas.ui
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
@@ -9,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.prueba2appurnas.R
-import com.example.prueba2appurnas.api.ApiConfig
 import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.api.UrnaImageService
 import com.example.prueba2appurnas.model.Urna
@@ -19,6 +19,10 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class UrnaDetailActivity : AppCompatActivity() {
+
+    companion object {
+        const val EXTRA_URNA = "extra_urna"
+    }
 
     private lateinit var imageUrna: ImageView
     private lateinit var recyclerViewImages: RecyclerView
@@ -53,7 +57,12 @@ class UrnaDetailActivity : AppCompatActivity() {
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
         // ✅ Obtener objeto Urna del intent (clave corregida)
-        val urna = intent.getSerializableExtra("urna") as? Urna
+        val urna = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getSerializableExtra(EXTRA_URNA, Urna::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getSerializableExtra(EXTRA_URNA) as? Urna
+        }
 
         if (urna == null) {
             Log.e("UrnaDetailActivity", "⚠️ No se encontró el objeto Urna en el intent")
@@ -67,7 +76,7 @@ class UrnaDetailActivity : AppCompatActivity() {
 
         // Mostrar imagen principal
         Glide.with(this)
-            .load(urna.image_url?.url)
+            .load(urna.mainImageUrl)
             .transition(DrawableTransitionOptions.withCrossFade(400))
             .placeholder(R.drawable.bg_image_border)
             .error(R.drawable.bg_image_border)
@@ -75,13 +84,13 @@ class UrnaDetailActivity : AppCompatActivity() {
             .into(imageUrna)
 
         // Mostrar datos
-        tvNombreUrna.text = urna.name ?: "Sin nombre"
+        tvNombreUrna.text = urna.name ?: getString(R.string.placeholder_without_name)
         tvDescripcionCorta.text = urna.short_description ?: "Sin descripción"
         tvDescripcionLarga.text = urna.detailed_description ?: "Sin descripción detallada"
         tvPeso.text = "${urna.weight ?: 0.0} kg"
         tvDisponible.text = if (urna.available == true) "Sí" else "No"
         tvMaterial.text = "Material ID: ${urna.material_id ?: "-"}"
-        tvPrecio.text = "$${urna.price ?: 0.0}"
+        tvPrecio.text = getString(R.string.placeholder_price, urna.price ?: 0.0)
         tvColor.text = "Color ID: ${urna.color_id ?: "-"}"
 
         // Cargar imágenes adicionales (si hay endpoint configurado)
@@ -89,8 +98,7 @@ class UrnaDetailActivity : AppCompatActivity() {
     }
 
     private fun fetchUrnaImages(urnaId: Int) {
-        urnaImageService = RetrofitClient.createClient(ApiConfig.BASE_URL_V1, this)
-            .create(UrnaImageService::class.java)
+        urnaImageService = RetrofitClient.getUrnaImageService(this)
 
         urnaImageService.getImagesByUrnaId(urnaId).enqueue(object : Callback<List<UrnaImage>> {
             override fun onResponse(
