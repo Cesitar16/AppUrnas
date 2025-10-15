@@ -2,4 +2,12 @@
     <string name="app_name">Prueba2AppUrnas</string>
     <string name="placeholder_without_name">Sin nombre</string>
     <string name="placeholder_price">$%.2f</string>
+    <string name="profile_title">Mi perfil</string>
+    <string name="profile_unknown_user">Usuario desconocido</string>
+    <string name="profile_unknown_email">Correo no disponible</string>
+    <string name="profile_unknown_role">Rol no disponible</string>
+    <string name="profile_session_title">Sesión</string>
+    <string name="profile_session_description">Gestiona tu sesión actual o cierra para iniciar con otra cuenta.</string>
+    <string name="profile_logout">Cerrar sesión</string>
+    <string name="profile_avatar_content_description">Avatar del usuario</string>
 </resources>

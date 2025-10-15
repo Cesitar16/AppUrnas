@@ -52,6 +52,7 @@ class RegisterActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     response.body()?.let {
                         tokenManager.saveToken(it.authToken)
+                        tokenManager.saveUser(it.user)
                         startActivity(Intent(this@RegisterActivity, HomeActivity::class.java))
                         finish()
                     }

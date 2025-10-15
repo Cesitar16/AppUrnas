@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     response.body()?.let {
                         tokenManager.saveToken(it.authToken)
+                        tokenManager.saveUser(it.user)
                         startActivity(Intent(this@MainActivity, HomeActivity::class.java))
                         finish()
                     }

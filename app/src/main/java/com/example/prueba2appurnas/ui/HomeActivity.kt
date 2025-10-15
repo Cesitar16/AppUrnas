@@ -3,6 +3,7 @@ package com.example.prueba2appurnas.ui
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -29,6 +30,9 @@ class HomeActivity : AppCompatActivity() {
 
         recyclerView = findViewById(R.id.recyclerViewUrnas)
         dashboardContainer = findViewById(R.id.dashboardContainer)
+        findViewById<ImageView>(R.id.imgProfile).setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
 

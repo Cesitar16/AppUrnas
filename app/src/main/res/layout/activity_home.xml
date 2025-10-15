@@ -17,11 +17,12 @@
         android:background="#AA000000" />
 
     <!-- Contenedor con scroll -->
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="24dp"
         android:clipToPadding="false"
+        android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -63,8 +64,10 @@
                         android:layout_marginEnd="16dp" />
 
                     <ImageView
+                        android:id="@+id/imgProfile"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
+                        android:contentDescription="@string/profile_title"
                         android:src="@android:drawable/ic_menu_myplaces"
                         app:tint="@color/colorTextLight" />
                 </LinearLayout>
@@ -144,5 +147,5 @@
                 android:clipToPadding="false"/>
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
