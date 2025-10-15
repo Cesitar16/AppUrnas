@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/black">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Imagen principal -->
+        <ImageView
+            android:id="@+id/imageUrna"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            android:contentDescription="Imagen de urna"
+            android:background="#1A000000" />
+
+        <!-- Carrusel horizontal (miniaturas) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewImages"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="horizontal"
+            android:overScrollMode="never"
+            android:clipToPadding="false"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+
+        <!-- Fondo translúcido para textos -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#66000000"
+            android:padding="16dp"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/tvNombreUrna"
+                android:text="Nombre de urna"
+                android:textColor="#E6D6B1"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvDescripcionCorta"
+                android:text="Descripción corta"
+                android:textColor="#D6C7A1"
+                android:textSize="16sp"
+                android:layout_marginBottom="6dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvDescripcionLarga"
+                android:text="Descripción detallada"
+                android:textColor="#C5B89B"
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <!-- Detalles técnicos -->
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:alignmentMode="alignMargins"
+            android:rowOrderPreserved="false"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:text="Peso:"
+                android:textColor="#E6D6B1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tvPeso"
+                android:text="0.0 kg"
+                android:textColor="#D6C7A1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Disponible:"
+                android:textColor="#E6D6B1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tvDisponible"
+                android:text="Sí"
+                android:textColor="#D6C7A1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Material:"
+                android:textColor="#E6D6B1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tvMaterial"
+                android:text="Madera"
+                android:textColor="#D6C7A1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Precio:"
+                android:textColor="#E6D6B1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tvPrecio"
+                android:text="$0.00"
+                android:textColor="#D6C7A1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="Color:"
+                android:textColor="#E6D6B1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tvColor"
+                android:text="Marrón oscuro"
+                android:textColor="#D6C7A1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </GridLayout>
+
+        <!-- Botones inferiores -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+
+            <Button
+                android:id="@+id/btnEditar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="EDITAR"
+                android:backgroundTint="#B48A60"
+                android:textColor="#FFF"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btnEliminar"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="ELIMINAR URNA"
+                android:backgroundTint="#8B3A3A"
+                android:textColor="#FFF" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

@@ -35,4 +35,13 @@ object RetrofitClient {
     fun getUrnaService(context: Context): UrnaService {
         return createClient(ApiConfig.BASE_URL_V1, context).create(UrnaService::class.java)
     }
+
+    fun getMaterialService(context: Context): MaterialService {
+        return createClient(ApiConfig.BASE_URL_V1, context).create(MaterialService::class.java)
+    }
+
+    fun getModelService(context: Context): ModelService {
+        return createClient(ApiConfig.BASE_URL_V1, context).create(ModelService::class.java)
+    }
+
 }

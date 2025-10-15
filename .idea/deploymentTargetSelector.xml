@@ -7,7 +7,7 @@
         <DropdownSelection timestamp="2025-10-14T20:01:56.444664500Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=RFCTB11P6TN" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\cesar\.android\avd\Medium_Phone.avd" />
             </handle>
           </Target>
         </DropdownSelection>
