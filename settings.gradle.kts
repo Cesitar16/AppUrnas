@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Prueba2AppUrnas"
+rootProject.name = "XanoStoreKotlin"
 include(":app")
  

@@ -1,13 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Prueba2AppUrnas</string>
-    <string name="profile_title">Perfil del usuario</string>
-    <string name="profile_name_label">Nombre</string>
-    <string name="profile_email_label">Correo electrónico</string>
-    <string name="profile_role_label">Rol</string>
-    <string name="profile_retry">Reintentar</string>
-    <string name="profile_close">Cerrar</string>
-    <string name="profile_error_generic">No fue posible cargar tu perfil.</string>
-    <string name="profile_error_status">Error al cargar el perfil (%1$d)</string>
-    <string name="profile_error_empty">No se encontró información del usuario.</string>
-    <string name="profile_unknown">Desconocido</string>
+    <string name="app_name">XanoStore Kotlin</string>
+    <string name="hint_email">Correo electrónico</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="action_login">Iniciar sesión</string>
+    <string name="hint_search">Buscar productos</string>
+    <string name="label_no_products">No hay productos disponibles</string>
+    <string name="action_retry">Reintentar</string>
+    <string name="hint_product_name">Nombre del producto</string>
+    <string name="hint_product_description">Descripción</string>
+    <string name="hint_product_price">Precio</string>
+    <string name="error_select_images">Selecciona al menos una imagen</string>
+    <string name="action_select_images">Seleccionar imágenes</string>
+    <string name="action_create_product">Crear producto</string>
+    <string name="action_logout">Cerrar sesión</string>
+    <string name="nav_products">Productos</string>
+    <string name="nav_add">Agregar</string>
+    <string name="nav_profile">Perfil</string>
+    <string name="title_product_detail">Detalle del producto</string>
+    <string name="price_format">$%1$.2f</string>
+    <string name="price_unknown">Precio no disponible</string>
+    <string name="content_description_product_image">Imagen del producto</string>
+    <string name="content_description_preview_image">Previsualización de imagen seleccionada</string>
+    <string name="image_indicator_pattern">%1$d / %2$d</string>
 </resources>

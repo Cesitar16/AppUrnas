@@ -1,18 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- 🎨 Colores del diseño Descansos del Recuerdo -->
-    <color name="colorPrimary">#A36B4F</color>
-    <color name="colorPrimaryDark">#8B573E</color>
-    <color name="colorAccent">#D6B899</color>
-    <color name="colorButton">#B67A52</color>
-    <color name="colorTextLight">#F5E6D3</color>
-    <color name="black_overlay">#66000000</color>
+    <color name="md_theme_light_primary">#6750A4</color>
+    <color name="md_theme_light_onPrimary">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">#EADDFF</color>
+    <color name="md_theme_light_onPrimaryContainer">#21005E</color>
+    <color name="md_theme_light_secondary">#625B71</color>
+    <color name="md_theme_light_onSecondary">#FFFFFF</color>
+    <color name="md_theme_light_background">#FFFBFE</color>
+    <color name="md_theme_light_surface">#FFFBFE</color>
+    <color name="md_theme_light_onSurface">#1C1B1F</color>
+    <color name="card_stroke">#FFE0E0E0</color>
 
-    <!-- 🧱 Colores por compatibilidad (evita errores) -->
-    <color name="purple_200">#BB86FC</color>
-    <color name="purple_500">#6200EE</color>
-    <color name="purple_700">#3700B3</color>
-    <color name="teal_200">#03DAC5</color>
-    <color name="teal_700">#018786</color>
-    <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color>
+    <color name="md_theme_dark_primary">#D0BCFF</color>
+    <color name="md_theme_dark_onPrimary">#381E72</color>
+    <color name="md_theme_dark_primaryContainer">#4F378B</color>
+    <color name="md_theme_dark_onPrimaryContainer">#EADDFF</color>
+    <color name="md_theme_dark_secondary">#CCC2DC</color>
+    <color name="md_theme_dark_onSecondary">#332D41</color>
+    <color name="md_theme_dark_background">#141218</color>
+    <color name="md_theme_dark_surface">#141218</color>
+    <color name="md_theme_dark_onSurface">#E6E1E5</color>
 </resources>
