@@ -50,12 +50,20 @@ class RegisterActivity : AppCompatActivity() {
                 val response = api.signup(SignupRequest(name, email, password))
 
                 if (response.isSuccessful) {
-                    response.body()?.let {
-                        tokenManager.saveToken(it.authToken)
-                        tokenManager.saveUser(it.user)
-                        startActivity(Intent(this@RegisterActivity, HomeActivity::class.java))
-                        finish()
+                    val authResponse = response.body()
+
+                    if (authResponse == null || authResponse.authToken.isBlank()) {
+                        Toast.makeText(
+                            this@RegisterActivity,
+                            "Respuesta de autenticación inválida",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@launch
                     }
+
+                    tokenManager.persistSession(authResponse)
+                    startActivity(Intent(this@RegisterActivity, HomeActivity::class.java))
+                    finish()
                 } else {
                     Toast.makeText(this@RegisterActivity, "Error al crear la cuenta", Toast.LENGTH_SHORT).show()
                 }

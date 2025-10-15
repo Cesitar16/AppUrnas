@@ -31,9 +31,14 @@ class ProfileFragment : Fragment() {
         val user = tokenManager.getUser()
 
         if (user != null) {
-            binding.txtUserName.text = user.name
-            binding.txtUserEmail.text = user.email
-            binding.txtUserRole.text = user.role
+            val displayName = user.name.ifBlank { getString(R.string.profile_unknown_user) }
+            val displayEmail = user.email.ifBlank { getString(R.string.profile_unknown_email) }
+            val displayRole = user.role?.takeIf { it.isNotBlank() }
+                ?: getString(R.string.profile_unknown_role)
+
+            binding.txtUserName.text = displayName
+            binding.txtUserEmail.text = displayEmail
+            binding.txtUserRole.text = displayRole
         } else {
             binding.txtUserName.text = getString(R.string.profile_unknown_user)
             binding.txtUserEmail.text = getString(R.string.profile_unknown_email)

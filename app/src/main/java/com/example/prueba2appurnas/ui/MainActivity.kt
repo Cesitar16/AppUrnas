@@ -48,12 +48,20 @@ class MainActivity : AppCompatActivity() {
                 val response = api.login(LoginRequest(email, password))
 
                 if (response.isSuccessful) {
-                    response.body()?.let {
-                        tokenManager.saveToken(it.authToken)
-                        tokenManager.saveUser(it.user)
-                        startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-                        finish()
+                    val authResponse = response.body()
+
+                    if (authResponse == null || authResponse.authToken.isBlank()) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Respuesta de autenticación inválida",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@launch
                     }
+
+                    tokenManager.persistSession(authResponse)
+                    startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+                    finish()
                 } else {
                     Toast.makeText(this@MainActivity, "Correo o contraseña incorrectos", Toast.LENGTH_SHORT).show()
                 }

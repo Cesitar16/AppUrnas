@@ -34,12 +34,21 @@ object RetrofitClient {
             .build()
     }
 
-    // 🔸 API para autenticación
+    // 🔸 API para autenticación sin interceptor
     fun getAuthService(context: Context): AuthService {
         return createClient(
             baseUrl = ApiConfig.BASE_URL_AUTH,
             context = context,
             withAuth = false
+        ).create(AuthService::class.java)
+    }
+
+    // 🔸 API de autenticación con interceptor para endpoints protegidos como /auth/me
+    fun getAuthenticatedAuthService(context: Context): AuthService {
+        return createClient(
+            baseUrl = ApiConfig.BASE_URL_AUTH,
+            context = context,
+            withAuth = true
         ).create(AuthService::class.java)
     }
 
