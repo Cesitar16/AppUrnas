@@ -1,28 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:layout_weight="1"
     android:orientation="vertical"
-    android:gravity="center"
-    android:padding="12dp"
+    android:background="#222"
+    android:padding="10dp"
     android:layout_margin="4dp"
-    android:background="#1FFFFFFF"
-    android:clipToOutline="true">
+    android:gravity="center"
+    android:foreground="?attr/selectableItemBackground"
+    android:elevation="3dp">
 
     <TextView
         android:id="@+id/txtMetricValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="0"
-        android:textColor="@android:color/white"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:textColor="#E6D6B1"
+        android:layout_marginBottom="4dp" />
 
     <TextView
         android:id="@+id/txtMetricLabel"
-        android:text="Métrica"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="12sp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:text="Label"
+        android:textColor="#C5B89B"
+        android:textSize="13sp" />
+
 </LinearLayout>
