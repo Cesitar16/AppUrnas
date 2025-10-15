@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.prueba2appurnas">
 
     <!-- Permiso de Internet (para conexión con APIs, backend, etc.) -->
@@ -11,7 +12,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Prueba2AppUrnas">
+        android:theme="@style/Theme.Prueba2AppUrnas"
+        tools:ignore="HardcodedDebugMode">
 
         <!-- Activity principal (Login) -->
         <activity
@@ -36,5 +38,12 @@
             android:exported="false"
             android:screenOrientation="sensor" />
 
+        <activity android:name=".ui.UrnaDetailActivity" />
+
+        <activity android:name=".ui.EditUrnaActivity"
+            android:exported="false"
+            android:screenOrientation="sensor"/>
+
     </application>
+
 </manifest>
