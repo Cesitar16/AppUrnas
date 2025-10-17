@@ -1,121 +1,171 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/fondo_login_app"
+    android:fillViewport="true"
+    android:overScrollMode="never"
     tools:context=".ui.EditUrnaActivity">
 
-    <!-- Fondo oscuro semi-transparente -->
-    <View
+    <!-- Capa oscura -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#AA000000" />
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:background="#AA000000"
+        android:gravity="center_horizontal">
 
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:padding="24dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Editar Urna"
+            android:textColor="@android:color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
 
+        <!-- Imagen -->
+        <ImageView
+            android:id="@+id/ivUrnaImage"
+            android:layout_width="160dp"
+            android:layout_height="160dp"
+            android:layout_marginBottom="12dp"
+            android:scaleType="centerCrop"
+            android:background="@drawable/bg_image_border"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
+        <Button
+            android:id="@+id/btnChangeImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cambiar Imagen"
+            android:layout_marginBottom="24dp"
+            app:backgroundTint="#80FFFFFF"
+            android:textColor="#FFFFFF" />
+
+        <!-- Datos básicos -->
+        <EditText
+            android:id="@+id/etName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre de la urna"
+            android:textColor="@android:color/white"
+            android:textColorHint="#AAA"
+            android:backgroundTint="#80FFFFFF"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/etShortDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Descripción corta"
+            android:textColor="@android:color/white"
+            android:textColorHint="#AAA"
+            android:backgroundTint="#80FFFFFF"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/etDetailedDesc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Descripción detallada"
+            android:gravity="top"
+            android:lines="3"
+            android:textColor="@android:color/white"
+            android:textColorHint="#AAA"
+            android:backgroundTint="#80FFFFFF"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Dimensiones -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Editar Urna"
-                android:textColor="@android:color/white"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginBottom="24dp"/>
-
-            <ImageView
-                android:id="@+id/ivUrnaImage"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_marginBottom="16dp"
-                android:scaleType="centerCrop"
-                android:background="#44FFFFFF"
-                tools:src="@tools:sample/backgrounds/scenic"/>
-
-            <Button
-                android:id="@+id/btnChangeImage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cambiar Imagen"
-                android:layout_marginBottom="24dp"
-                app:backgroundTint="#80FFFFFF"
-                android:textColor="#FFFFFF"/>
+            android:orientation="horizontal"
+            android:weightSum="3"
+            android:layout_marginBottom="12dp">
 
             <EditText
-                android:id="@+id/etName"
-                android:layout_width="match_parent"
+                android:id="@+id/etWidth"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Nombre de la urna"
-                android:textColor="@android:color/white"
-                android:textColorHint="#AAA"
-                android:backgroundTint="#80FFFFFF"
-                android:layout_marginBottom="16dp"/>
-
-            <EditText
-                android:id="@+id/etShortDesc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Descripción corta"
-                android:textColor="@android:color/white"
-                android:textColorHint="#AAA"
-                android:backgroundTint="#80FFFFFF"
-                android:layout_marginBottom="16dp"/>
-
-            <EditText
-                android:id="@+id/etDetailedDesc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="top"
-                android:lines="3"
-                android:hint="Descripción detallada"
-                android:textColor="@android:color/white"
-                android:textColorHint="#AAA"
-                android:backgroundTint="#80FFFFFF"
-                android:layout_marginBottom="16dp"/>
-
-            <EditText
-                android:id="@+id/etPrice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Ancho (cm)"
                 android:inputType="numberDecimal"
-                android:hint="Precio"
                 android:textColor="@android:color/white"
                 android:textColorHint="#AAA"
                 android:backgroundTint="#80FFFFFF"
-                android:layout_marginBottom="16dp"/>
+                android:layout_marginEnd="8dp" />
 
             <EditText
-                android:id="@+id/etStock"
-                android:layout_width="match_parent"
+                android:id="@+id/etDepth"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:inputType="number"
-                android:hint="Stock"
+                android:layout_weight="1"
+                android:hint="Prof. (cm)"
+                android:inputType="numberDecimal"
                 android:textColor="@android:color/white"
                 android:textColorHint="#AAA"
                 android:backgroundTint="#80FFFFFF"
-                android:layout_marginBottom="24dp"/>
+                android:layout_marginEnd="8dp" />
 
-            <Button
-                android:id="@+id/btnSaveChanges"
-                android:layout_width="match_parent"
+            <EditText
+                android:id="@+id/etHeight"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Guardar Cambios"
+                android:layout_weight="1"
+                android:hint="Alto (cm)"
+                android:inputType="numberDecimal"
                 android:textColor="@android:color/white"
-                app:backgroundTint="#C9A46A"/>
-
+                android:textColorHint="#AAA"
+                android:backgroundTint="#80FFFFFF" />
         </LinearLayout>
-    </ScrollView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!-- Peso, precio y stock -->
+        <EditText
+            android:id="@+id/etWeight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:hint="Peso (kg)"
+            android:textColor="@android:color/white"
+            android:textColorHint="#AAA"
+            android:backgroundTint="#80FFFFFF"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/etPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal"
+            android:hint="Precio"
+            android:textColor="@android:color/white"
+            android:textColorHint="#AAA"
+            android:backgroundTint="#80FFFFFF"
+            android:layout_marginBottom="12dp" />
+
+        <EditText
+            android:id="@+id/etStock"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:hint="Stock"
+            android:textColor="@android:color/white"
+            android:textColorHint="#AAA"
+            android:backgroundTint="#80FFFFFF"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Botón -->
+        <Button
+            android:id="@+id/btnSaveChanges"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar Cambios"
+            android:textColor="@android:color/white"
+            app:backgroundTint="#C9A46A" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

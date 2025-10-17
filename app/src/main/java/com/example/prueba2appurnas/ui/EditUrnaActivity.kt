@@ -175,9 +175,7 @@ class EditUrnaActivity : AppCompatActivity() {
 
     private fun createUpdatedUrna(newImage: ImageUrl?): Urna {
         val finalImageUrl = newImage ?: urna.image_url
-        val correctedImageUrl = finalImageUrl?.copy(
-            meta = finalImageUrl.meta ?: emptyMap()
-        )
+        val correctedImageUrl = finalImageUrl?.copy(meta = finalImageUrl.meta ?: emptyMap())
 
         return urna.copy(
             name = etName.text.toString(),
@@ -185,9 +183,14 @@ class EditUrnaActivity : AppCompatActivity() {
             detailed_description = etDetailedDesc.text.toString(),
             price = etPrice.text.toString().toDoubleOrNull() ?: urna.price,
             stock = etStock.text.toString().toIntOrNull() ?: urna.stock,
+            width = findViewById<EditText>(R.id.etWidth).text.toString().toDoubleOrNull() ?: urna.width,
+            depth = findViewById<EditText>(R.id.etDepth).text.toString().toDoubleOrNull() ?: urna.depth,
+            height = findViewById<EditText>(R.id.etHeight).text.toString().toDoubleOrNull() ?: urna.height,
+            weight = findViewById<EditText>(R.id.etWeight).text.toString().toDoubleOrNull() ?: urna.weight,
             image_url = correctedImageUrl
         )
     }
+
 
     private fun updateUrnaApiCall(updatedUrna: Urna) {
         urna.id.let {
