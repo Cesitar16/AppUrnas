@@ -16,6 +16,7 @@
         android:theme="@style/Theme.Prueba2AppUrnas"
         android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config"
+
         tools:ignore="HardcodedDebugMode">
 
         <!-- 🟢 Activity principal (Login) -->
@@ -41,6 +42,7 @@
             android:exported="false"
             android:screenOrientation="sensor" />
 
+
         <!-- 🟢 Activity de detalle de urna -->
         <activity
             android:name=".ui.UrnaDetailActivity"
@@ -53,6 +55,11 @@
             android:exported="false"
             android:screenOrientation="sensor" />
 
+        <activity android:name=".ui.UrnaDetailActivity" />
+
+        <activity android:name=".ui.EditUrnaActivity"
+            android:exported="false"
+            android:screenOrientation="sensor"/>
     </application>
 
 </manifest>

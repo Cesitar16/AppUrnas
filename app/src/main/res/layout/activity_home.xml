@@ -15,15 +15,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#AA000000" />
-
     <!-- Contenedor principal con scroll -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollContainer"
+
+    <!-- Contenedor con scroll -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
         android:padding="24dp"
         android:clipToPadding="false"
+        android:fillViewport="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -32,8 +35,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
-            <!-- Barra superior -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -48,7 +49,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center_vertical">
-
                     <ImageView
                         android:layout_width="match_parent"
                         android:layout_height="47dp"
@@ -56,7 +56,6 @@
                         android:contentDescription="@string/titulo_principal"
                         app:srcCompat="@drawable/logo_escala_ajuste_pesomenos"
                         app:tint="@color/colorTextLight" />
-
                 </LinearLayout>
 
                 <!-- Iconos de usuario -->
@@ -77,10 +76,14 @@
             </LinearLayout>
 
             <!-- Botón Nueva Urna -->
+
+            <!-- Título Dashboard -->
+
             <Button
                 android:id="@+id/btnNuevaUrna"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+
                 android:text="@string/boton_nueva_urna"
                 android:paddingHorizontal="24dp"
                 android:paddingVertical="10dp"
@@ -89,9 +92,25 @@
                 app:backgroundTint="#C9A46A"
                 android:textColor="@android:color/white"
                 android:textAllCaps="false"
-                android:fontFamily="sans-serif-medium" />
 
-            <!-- Título Dashboard -->
+                android:layout_gravity="end"
+                android:layout_marginBottom="20dp"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="10dp"
+                android:text="+ Nueva Urna"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:backgroundTint="#C9A46A" />
+
+                android:id="@+id/btnProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Perfil"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:backgroundTint="#C9A46A" />
+
+
             <TextView
                 android:id="@+id/txtGestion"
                 android:layout_width="wrap_content"
@@ -104,6 +123,15 @@
 
             <!-- Dashboard dinámico (rellenado por código) -->
             <GridLayout
+                android:text="Dashboard de Urnas"
+                android:textColor="@color/colorTextLight"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Tarjetas métricas dinámicas -->
+
+            <LinearLayout
                 android:id="@+id/dashboardContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -136,7 +164,11 @@
                     android:id="@+id/inputBuscar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+
                     android:hint="@string/hint_buscar_urnas"
+
+                    android:hint="Buscar urnas por nombre o ID interno"
+
                     android:background="@null"
                     android:textColor="@color/colorTextLight"
                     android:textColorHint="#AAA"
