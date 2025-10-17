@@ -3,7 +3,9 @@ package com.example.prueba2appurnas.ui
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.LinearLayout
+import android.view.View
+import android.widget.GridLayout
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -19,7 +21,7 @@ import retrofit2.Response
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
-    private lateinit var dashboardContainer: LinearLayout
+    private lateinit var dashboardContainer: GridLayout
     private lateinit var adapter: UrnaAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,8 +36,12 @@ class HomeActivity : AppCompatActivity() {
         fetchUrnas()
     }
 
+    /**
+     * Obtiene la lista de urnas desde el backend (Xano) usando Retrofit.
+     */
     private fun fetchUrnas() {
         val service = RetrofitClient.getUrnaService(this)
+
         service.getUrnas().enqueue(object : Callback<List<Urna>> {
             override fun onResponse(call: Call<List<Urna>>, response: Response<List<Urna>>) {
                 if (response.isSuccessful) {
@@ -46,6 +52,7 @@ class HomeActivity : AppCompatActivity() {
                         adapter = UrnaAdapter(urnas)
                         recyclerView.adapter = adapter
                         updateDashboard(urnas)
+                        setupSearch(urnas)
                     } else {
                         Toast.makeText(this@HomeActivity, "No hay urnas disponibles", Toast.LENGTH_SHORT).show()
                     }
@@ -63,6 +70,31 @@ class HomeActivity : AppCompatActivity() {
         })
     }
 
+    private fun setupSearch(urnas: List<Urna>) {
+        val inputBuscar = findViewById<android.widget.EditText>(R.id.inputBuscar)
+
+        inputBuscar.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                val query = s.toString().trim().lowercase()
+
+                // 🔍 Filtrar urnas por nombre o ID interno
+                val filtered = urnas.filter { urna ->
+                    val nombre = urna.name?.lowercase()?.contains(query) ?: false
+                    val internalId = urna.internal_id?.lowercase()?.contains(query) ?: false
+                    nombre || internalId
+                }
+
+                adapter.updateData(filtered)
+            }
+        })
+    }
+
+    /**
+     * Actualiza el dashboard superior con métricas calculadas.
+     */
     private fun updateDashboard(urnas: List<Urna>) {
         dashboardContainer.removeAllViews()
         val inflater = LayoutInflater.from(this)
@@ -70,20 +102,41 @@ class HomeActivity : AppCompatActivity() {
         val totalUrnas = urnas.size
         val stockTotal = urnas.sumOf { it.stock ?: 0 }
         val promedioPrecio = if (urnas.isNotEmpty()) urnas.mapNotNull { it.price }.average() else 0.0
-        val disponibles = urnas.count { it.available == true }
 
+        // 🔸 Contar urnas con stock bajo (5 o menos)
+        val urnasBajoStock = urnas.count { (it.stock ?: 0) <= 5 }
+
+        // 🔸 Mostrar las 4 métricas actualizadas
         val metrics = listOf(
-            Pair(totalUrnas.toString(), "Total de urnas"),
-            Pair(stockTotal.toString(), "Stock total"),
-            Pair("$${promedioPrecio.toInt()}", "Precio promedio"),
-            Pair(disponibles.toString(), "Urnas disponibles")
+            Triple(totalUrnas.toString(), getString(R.string.total_urnas), R.drawable.ic_inventory),
+            Triple(stockTotal.toString(), getString(R.string.stock_total), R.drawable.ic_trending_up),
+            Triple("$${promedioPrecio.toInt()}", getString(R.string.precio_promedio), R.drawable.ic_sales),
+            Triple(urnasBajoStock.toString(), getString(R.string.urnas_bajo_stock), R.drawable.ic_warning)
         )
 
-        metrics.forEach { (value, label) ->
+        dashboardContainer.columnCount = 4
+
+        metrics.forEach { (value, label, iconRes) ->
             val view = inflater.inflate(R.layout.item_metric_card, dashboardContainer, false)
+
             view.findViewById<TextView>(R.id.txtMetricValue).text = value
             view.findViewById<TextView>(R.id.txtMetricLabel).text = label
+
+            val icon = view.findViewById<ImageView>(R.id.imgMetricIcon)
+            icon.setImageResource(iconRes)
+            icon.visibility = View.VISIBLE
+
+            // 🔸 Forzar distribución uniforme dentro del GridLayout
+            val params = GridLayout.LayoutParams().apply {
+                width = 0
+                height = GridLayout.LayoutParams.WRAP_CONTENT
+                columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
+                setMargins(8, 8, 8, 8)
+            }
+
+            view.layoutParams = params
             dashboardContainer.addView(view)
         }
     }
+
 }

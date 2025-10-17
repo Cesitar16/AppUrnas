@@ -15,4 +15,8 @@
     <color name="teal_700">#018786</color>
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
+
+    <color name="stockNormal">#76FF03</color>  <!-- Verde brillante -->
+    <color name="stockBajo">#FF5252</color>    <!-- Rojo alerta -->
+
 </resources>

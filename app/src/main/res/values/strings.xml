@@ -1,10 +1,93 @@
 <resources>
     <string name="app_name">Prueba2AppUrnas</string>
+
+    <!-- Encabezado -->
     <string name="titulo_principal">DESCANSOS DEL</string>
+    <string name="subtitulo_principal">Gestión de Urnas</string>
+    <string name="icono_notificaciones">Notificaciones</string>
+    <string name="icono_usuario">Perfil de usuario</string>
+
+    <!-- Botones -->
     <string name="boton_nueva_urna">+ Nueva Urna</string>
-    <string name="titulo_dashboard">Dashboard de Urnas</string>
-    <string name="hint_buscar_urnas">Buscar urnas por nombre o ID interno</string>
+    <string name="boton_guardar">Guardar</string>
+    <string name="boton_cancelar">Cancelar</string>
+    <string name="boton_editar">Editar</string>
+    <string name="boton_eliminar">Eliminar</string>
+    <string name="boton_volver">Volver</string>
+    <string name="boton_confirmar">Confirmar</string>
+    <string name="boton_subir_imagen">Subir imagen</string>
+    <string name="boton_actualizar">Actualizar</string>
+
+    <!-- Dashboard -->
+    <string name="titulo_dashboard">Gestión de Urnas</string>
+    <string name="total_urnas">Total de urnas</string>
+    <string name="stock_disponible">Stock disponible</string>
+    <string name="bajo_stock">Bajo stock</string>
+    <string name="ventas_mes">Ventas del mes</string>
+    <string name="precio_promedio">Precio promedio</string>
+    <string name="urnas_bajo_stock">Bajo stock</string>
+    <string name="stock_total">Stock total</string>
+
+    <!-- Campos de Urna -->
+    <string name="campo_nombre">Nombre</string>
+    <string name="campo_precio">Precio</string>
+    <string name="campo_stock">Stock</string>
+    <string name="campo_altura">Altura</string>
+    <string name="campo_ancho">Ancho</string>
+    <string name="campo_profundidad">Profundidad</string>
+    <string name="campo_peso">Peso</string>
+    <string name="campo_descripcion_corta">Descripción corta</string>
+    <string name="campo_descripcion_detallada">Descripción detallada</string>
+    <string name="campo_material">Material</string>
+    <string name="campo_color">Color</string>
+    <string name="campo_modelo">Modelo</string>
+
+    <!-- Placeholders -->
+    <string name="hint_buscar_urnas">Buscar urnas por nombre o ID</string>
+    <string name="hint_nombre">Ingrese el nombre</string>
+    <string name="hint_precio">Ingrese el precio</string>
+    <string name="hint_stock">Ingrese la cantidad disponible</string>
+    <string name="hint_descripcion">Ingrese una descripción</string>
+
+    <!-- Iconos y descripciones -->
+    <string name="icono_busqueda">Buscar</string>
     <string name="icono_correo">Icono de correo</string>
-    <string name="icono_ubicacion">Icono de ubicación o marcador</string>
-    <string name="icono_busqueda">Icono de búsqueda</string>
+    <string name="icono_ubicacion">Icono de ubicación</string>
+    <string name="icono_imagen">Icono de imagen</string>
+    <string name="menu_mas">Más opciones</string>
+
+    <!-- Mensajes y feedback -->
+    <string name="mensaje_cargando">Cargando...</string>
+    <string name="mensaje_error">Ha ocurrido un error.</string>
+    <string name="mensaje_sin_resultados">No se encontraron urnas.</string>
+    <string name="mensaje_guardado_exitoso">Urna guardada correctamente.</string>
+    <string name="mensaje_actualizado_exitoso">Datos actualizados correctamente.</string>
+    <string name="mensaje_eliminado_exitoso">Eliminado correctamente.</string>
+    <string name="mensaje_confirmar_eliminacion">¿Estás seguro de eliminar esta urna?</string>
+    <string name="mensaje_subiendo_imagen">Subiendo imagen...</string>
+    <string name="mensaje_error_conexion">No se pudo conectar al servidor.</string>
+    <string name="mensaje_error_validacion">Por favor, complete todos los campos obligatorios.</string>
+
+    <!-- Errores comunes -->
+    <string name="error_api">Error al conectar con el servidor.</string>
+    <string name="error_autenticacion">Error de autenticación.</string>
+    <string name="error_carga_imagen">Error al cargar la imagen.</string>
+
+    <!-- Login / Registro -->
+    <string name="titulo_login">Iniciar sesión</string>
+    <string name="titulo_registro">Crear cuenta</string>
+    <string name="hint_correo">Correo electrónico</string>
+    <string name="hint_contrasena">Contraseña</string>
+    <string name="hint_confirmar_contrasena">Confirmar contraseña</string>
+    <string name="link_crear_cuenta">¿No tienes una cuenta? Crear una</string>
+    <string name="link_iniciar_sesion">¿Ya tienes cuenta? Inicia sesión</string>
+
+    <!-- Generales -->
+    <string name="texto_cargando">Cargando información...</string>
+    <string name="texto_vacio">No hay elementos para mostrar</string>
+    <string name="titulo_detalle_urna">Detalle de la urna</string>
+    <string name="titulo_editar_urna">Editar urna</string>
+    <string name="titulo_crear_urna">Agregar nueva urna</string>
+    <string name="titulo_home">Inicio</string>
+    <string name="titulo_ajustes">Ajustes</string>
 </resources>
