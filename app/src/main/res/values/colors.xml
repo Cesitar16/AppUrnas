@@ -6,6 +6,7 @@
     <color name="colorButton">#B67A52</color>
     <color name="colorTextLight">#F5E6D3</color>
     <color name="black_overlay">#66000000</color>
+    <color name="colorAccentGold">#FFC107</color>
 
     <!-- 🧱 Colores por compatibilidad (evita errores) -->
     <color name="purple_200">#BB86FC</color>

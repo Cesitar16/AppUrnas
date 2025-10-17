@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#AA000000" tools:context=".ui.EditUrnaActivity">
+    android:background="#AA000000" tools:context=".ui.fragments.AddUrnaFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -23,7 +23,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Editar Urna"
+                android:text="Crear Nueva Urna"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@color/colorTextLight"
@@ -31,35 +31,37 @@
                 android:layout_marginBottom="20dp"/>
 
             <ImageView
-                android:id="@+id/ivUrnaImage" android:layout_width="150dp"
+                android:id="@+id/imgUrnaPreview"
+                android:layout_width="150dp"
                 android:layout_height="150dp"
                 android:layout_gravity="center"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/bg_image_border"
                 android:scaleType="centerCrop"
-                android:contentDescription="Vista previa de imagen" />
+                android:contentDescription="Vista previa de la imagen principal" />
 
             <Button
-                android:id="@+id/btnSelectImage" style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:id="@+id/btnSelectMainImage"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Cambiar Imagen"
+                android:text="Seleccionar Imagen Principal"
                 android:textColor="@color/colorAccentGold"
                 android:layout_marginBottom="24dp" />
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilName" android:layout_width="match_parent"
+                android:id="@+id/tilName"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nombre de la Urna"
-                app:boxBackgroundColor="#1AFFFFFF"
-                app:hintTextColor="#AAA"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                app:boxBackgroundColor="#1AFFFFFF" app:hintTextColor="#AAA" style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etName" android:layout_width="match_parent"
+                    android:id="@+id/etName"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/colorTextLight"
-                    android:inputType="textCapWords" />
+                    android:textColor="@color/colorTextLight" android:inputType="textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
@@ -67,6 +69,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginTop="8dp">
+
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilPrice"
                     android:layout_width="0dp"
@@ -77,6 +80,7 @@
                     app:boxBackgroundColor="#1AFFFFFF"
                     app:hintTextColor="#AAA"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etPrice"
                         android:layout_width="match_parent"
@@ -95,6 +99,7 @@
                     app:boxBackgroundColor="#1AFFFFFF"
                     app:hintTextColor="#AAA"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etStock"
                         android:layout_width="match_parent"
@@ -102,7 +107,9 @@
                         android:textColor="@color/colorTextLight"
                         android:inputType="number" />
                 </com.google.android.material.textfield.TextInputLayout>
+
             </LinearLayout>
+
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilShortDescription"
@@ -113,6 +120,7 @@
                 app:boxBackgroundColor="#1AFFFFFF"
                 app:hintTextColor="#AAA"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etShortDescription"
                     android:layout_width="match_parent"
@@ -130,6 +138,7 @@
                 app:boxBackgroundColor="#1AFFFFFF"
                 app:hintTextColor="#AAA"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etDetailedDescription"
                     android:layout_width="match_parent"
@@ -140,57 +149,22 @@
                     android:textColor="@color/colorTextLight"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Color" android:textColor="#AAA" android:layout_marginTop="16dp"/>
-            <Spinner
-                android:id="@+id/spinner_color" android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:backgroundTint="@color/colorTextLight"
-                style="@style/Widget.AppCompat.Spinner.Underlined"/>
-
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Material" android:textColor="#AAA" android:layout_marginTop="8dp"/>
-            <Spinner
-                android:id="@+id/spinner_material" android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:backgroundTint="@color/colorTextLight"
-                style="@style/Widget.AppCompat.Spinner.Underlined"/>
-
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Modelo" android:textColor="#AAA" android:layout_marginTop="8dp"/>
-            <Spinner
-                android:id="@+id/spinner_model" android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:backgroundTint="@color/colorTextLight"
-                style="@style/Widget.AppCompat.Spinner.Underlined"/>
-
             <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/switch_available" android:layout_width="match_parent"
+                android:id="@+id/switchAvailable"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Disponible para la venta"
                 android:textColor="@color/colorTextLight"
                 android:checked="true"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginBottom="24dp"/>
 
             <Button
-                android:id="@+id/btnSaveChanges"
+                android:id="@+id/btnSaveUrna"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Guardar Cambios"
-                app:backgroundTint="@color/colorAccentGold"
-                android:textColor="@android:color/black"
-                android:paddingVertical="12dp"
-                android:layout_marginBottom="8dp"/>
-
-            <Button
-                android:id="@+id/btnDeleteUrna"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Eliminar Urna"
-                android:textColor="@android:color/holo_red_light"
-                app:strokeColor="@android:color/holo_red_light"
+                android:text="Guardar Urna"
+                app:backgroundTint="@color/colorAccentGold" android:textColor="@android:color/black" android:paddingVertical="12dp"
                 android:layout_marginBottom="16dp"/>
 
         </LinearLayout>

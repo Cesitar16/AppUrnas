@@ -9,13 +9,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.example.prueba2appurnas.R
-import com.example.prueba2appurnas.api.ApiConfig
 import com.example.prueba2appurnas.api.RetrofitClient
-import com.example.prueba2appurnas.api.TokenManager
 import com.example.prueba2appurnas.api.UrnaImageService
 import com.example.prueba2appurnas.model.Urna
 import com.example.prueba2appurnas.model.UrnaImage
@@ -129,8 +125,7 @@ class UrnaDetailActivity : AppCompatActivity() {
 
     // 🔹 Cargar imágenes adicionales de la urna
     private fun fetchUrnaImages(urnaId: Int) {
-        urnaImageService = RetrofitClient.createClient(ApiConfig.BASE_URL_V1, this)
-            .create(UrnaImageService::class.java)
+        urnaImageService = RetrofitClient.getUrnaImageService(this) // <-- CORRECTO: Usa la función pública
 
         urnaImageService.getImagesByUrnaId(urnaId).enqueue(object : Callback<List<UrnaImage>> {
             override fun onResponse(
