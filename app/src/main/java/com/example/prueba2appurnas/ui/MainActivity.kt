@@ -3,8 +3,11 @@ package com.example.prueba2appurnas.ui
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.api.TokenManager
 import com.example.prueba2appurnas.databinding.ActivityMainBinding
@@ -16,12 +19,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var tokenManager: TokenManager
 
+    @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         tokenManager = TokenManager(this)
+
+        // --- VERIFICAR SI YA HAY SESIÓN ---
+        // Es buena práctica verificar si ya existe un token válido al iniciar MainActivity.
+        // Si existe, ir directamente a HomeActivity.
+        if (tokenManager.isLoggedIn()) {
+            Log.d("MainActivity", "Usuario ya logueado, redirigiendo a Home.")
+            startActivity(Intent(this@MainActivity, HomeActivity::class.java))
+            finish() // Cierra MainActivity para que no quede en la pila
+            return // Salir de onCreate temprano
+        }
+        // --- FIN VERIFICACIÓN ---
+
 
         // Acción de iniciar sesión
         binding.btnLogin.setOnClickListener {
@@ -41,23 +57,57 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @OptIn(UnstableApi::class)
     private fun loginUser(email: String, password: String) {
+        // Mostrar ProgressBar y deshabilitar botón (opcional pero recomendado)
+        // binding.progressBar.visibility = View.VISIBLE
+        binding.btnLogin.isEnabled = false
+
         lifecycleScope.launch {
             try {
                 val api = RetrofitClient.getAuthService(this@MainActivity)
+                // Usar suspend fun directamente
                 val response = api.login(LoginRequest(email, password))
 
                 if (response.isSuccessful) {
-                    response.body()?.let {
-                        tokenManager.saveToken(it.authToken)
+                    response.body()?.let { authResponse ->
+                        Log.d("MainActivity", "Login exitoso. Token: ${authResponse.authToken}, User: ${authResponse.user}") // Log remains the same
+
+                        // --- *** CORRECTION: Handle potential null user object *** ---
+                        val userName = authResponse.user?.name // Use safe call (?.)
+                        val userEmail = authResponse.user?.email // Use safe call (?.)
+                        val userRole = authResponse.user?.role // Use safe call (?.)
+
+                        tokenManager.saveAuthData(
+                            token = authResponse.authToken,
+                            name = userName,    // Pass potentially null value
+                            email = userEmail,   // Pass potentially null value
+                            role = userRole     // Pass potentially null value
+                        )
+                        // --- FIN GUARDAR DATOS ---
+
+                        // Ir a Home
                         startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-                        finish()
+                        finish() // Cerrar MainActivity después del login exitoso
+                    } ?: run {
+                        // El cuerpo de la respuesta fue nulo a pesar de ser exitosa (raro)
+                        Log.w("MainActivity", "Login exitoso pero cuerpo de respuesta nulo.")
+                        Toast.makeText(this@MainActivity, "Respuesta inesperada del servidor", Toast.LENGTH_SHORT).show()
                     }
                 } else {
+                    // Error de login (credenciales incorrectas, etc.)
+                    val errorBody = response.errorBody()?.string() ?: "Error desconocido"
+                    Log.e("MainActivity", "Error en login (${response.code()}): $errorBody")
                     Toast.makeText(this@MainActivity, "Correo o contraseña incorrectos", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                // Error de red u otro inesperado
+                Log.e("MainActivity", "Excepción durante login: ${e.message}", e)
+                Toast.makeText(this@MainActivity, "Error de conexión: ${e.message}", Toast.LENGTH_LONG).show()
+            } finally {
+                // Ocultar ProgressBar y habilitar botón
+                // binding.progressBar.visibility = View.GONE
+                binding.btnLogin.isEnabled = true
             }
         }
     }

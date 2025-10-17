@@ -15,6 +15,7 @@ import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.api.UrnaImageService
 import com.example.prueba2appurnas.model.Urna
 import com.example.prueba2appurnas.model.UrnaImage
+import com.example.prueba2appurnas.ui.fragments.EditUrnaFragment
 import com.example.prueba2appurnas.util.NetUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -43,7 +44,7 @@ class UrnaDetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_urna_detail)
+        setContentView(R.layout.fragment_urna_detail)
 
         // 🔹 Vincular vistas
         imageUrna = findViewById(R.id.imageUrna)
@@ -59,7 +60,6 @@ class UrnaDetailActivity : AppCompatActivity() {
         tvPrecio = findViewById(R.id.tvPrecio)
         tvColor = findViewById(R.id.tvColor)
         btnEditar = findViewById(R.id.btnEditar)
-        btnEliminar = findViewById(R.id.btnEliminar)
 
         recyclerViewImages.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
@@ -108,7 +108,7 @@ class UrnaDetailActivity : AppCompatActivity() {
 
         // 🧩 Botón editar
         btnEditar.setOnClickListener {
-            val intent = Intent(this, EditUrnaActivity::class.java)
+            val intent = Intent(this, EditUrnaFragment::class.java)
             intent.putExtra("urn", urna)
             startActivity(intent)
         }

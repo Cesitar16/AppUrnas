@@ -67,6 +67,7 @@ dependencies {
 
     // ✅ Glide (para cargar imágenes)
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.androidx.media3.common.ktx)
     kapt("com.github.bumptech.glide:compiler:4.16.0")
 
     // Testing

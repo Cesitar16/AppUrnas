@@ -43,18 +43,6 @@
             android:exported="false"
             android:screenOrientation="sensor" />
 
-        <!-- 🟢 Activity de detalle de urna -->
-        <activity
-            android:name=".ui.UrnaDetailActivity"
-            android:exported="false"
-            android:screenOrientation="sensor" />
-
-        <!-- 🟢 Activity de edición de urna -->
-        <activity
-            android:name=".ui.EditUrnaActivity"
-            android:exported="false"
-            android:screenOrientation="sensor" />
-
     </application>
 
 </manifest>
