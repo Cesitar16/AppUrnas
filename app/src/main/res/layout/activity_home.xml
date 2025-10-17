@@ -15,11 +15,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#AA000000" />
+    <!-- Contenedor principal con scroll -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollContainer"
 
     <!-- Contenedor con scroll -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         android:padding="24dp"
         android:clipToPadding="false"
         android:fillViewport="true"
@@ -28,42 +32,47 @@
 
         <LinearLayout
             android:id="@+id/mainContainer"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <!-- Encabezado superior -->
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="24dp">
 
-                <TextView
-                    android:id="@+id/txtTitulo"
+                <!-- Logo + título -->
+                <LinearLayout
+                    android:orientation="horizontal"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="DESCANSOS DEL"
-                    android:textColor="@color/colorTextLight"
-                    android:textStyle="bold"
-                    android:textSize="22sp" />
-
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center">
-
+                    android:gravity="center_vertical">
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:src="@android:drawable/ic_dialog_email"
-                        app:tint="@color/colorTextLight"
-                        android:layout_marginEnd="16dp" />
-
+                        android:layout_width="match_parent"
+                        android:layout_height="47dp"
+                        android:layout_marginEnd="8dp"
+                        android:contentDescription="@string/titulo_principal"
+                        app:srcCompat="@drawable/logo_escala_ajuste_pesomenos"
+                        app:tint="@color/colorTextLight" />
                 </LinearLayout>
+
+                <!-- Iconos de usuario -->
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:srcCompat="@drawable/ic_notifications"
+                    app:tint="@color/colorTextLight"
+                    android:layout_marginEnd="20dp"
+                    android:contentDescription="@string/icono_notificaciones" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:srcCompat="@drawable/ic_user"
+                    app:tint="@color/colorTextLight"
+                    android:contentDescription="@string/icono_usuario" />
             </LinearLayout>
 
             <!-- Botón Nueva Urna -->
@@ -74,6 +83,16 @@
                 android:id="@+id/btnNuevaUrna"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+
+                android:text="@string/boton_nueva_urna"
+                android:paddingHorizontal="24dp"
+                android:paddingVertical="10dp"
+                android:layout_gravity="end"
+                android:layout_marginBottom="24dp"
+                app:backgroundTint="#C9A46A"
+                android:textColor="@android:color/white"
+                android:textAllCaps="false"
+
                 android:layout_gravity="end"
                 android:layout_marginBottom="20dp"
                 android:paddingHorizontal="20dp"
@@ -83,7 +102,6 @@
                 android:textColor="@android:color/white"
                 app:backgroundTint="#C9A46A" />
 
-            <Button
                 android:id="@+id/btnProfile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -92,10 +110,19 @@
                 android:textColor="@android:color/white"
                 app:backgroundTint="#C9A46A" />
 
+
             <TextView
                 android:id="@+id/txtGestion"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="@string/titulo_dashboard"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="@color/colorTextLight"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Dashboard dinámico (rellenado por código) -->
+            <GridLayout
                 android:text="Dashboard de Urnas"
                 android:textColor="@color/colorTextLight"
                 android:textSize="20sp"
@@ -108,35 +135,40 @@
                 android:id="@+id/dashboardContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center"
-                android:weightSum="4"
-                android:layout_marginBottom="20dp"
-                android:layout_marginTop="8dp"/>
+                android:columnCount="4"
+                android:alignmentMode="alignMargins"
+                android:useDefaultMargins="true"
+                android:rowOrderPreserved="false"
+                android:layout_marginBottom="24dp" />
 
-            <!-- Campo de búsqueda -->
+            <!-- Buscador -->
             <LinearLayout
+                android:id="@+id/searchContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:padding="12dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="16dp"
                 android:gravity="center_vertical"
-                android:background="#1AFFFFFF"
-                android:clipToOutline="true">
+                android:background="#1AFFFFFF">
 
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@android:drawable/ic_menu_search"
                     app:tint="@color/colorTextLight"
-                    android:layout_marginEnd="8dp" />
+                    android:layout_marginEnd="8dp"
+                    android:contentDescription="@string/icono_busqueda" />
 
                 <EditText
                     android:id="@+id/inputBuscar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+
+                    android:hint="@string/hint_buscar_urnas"
+
                     android:hint="Buscar urnas por nombre o ID interno"
+
                     android:background="@null"
                     android:textColor="@color/colorTextLight"
                     android:textColorHint="#AAA"
@@ -148,9 +180,11 @@
                 android:id="@+id/recyclerViewUrnas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="32dp"
                 android:nestedScrollingEnabled="false"
-                android:clipToPadding="false"/>
-
+                android:overScrollMode="never"
+                android:clipToPadding="false" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
