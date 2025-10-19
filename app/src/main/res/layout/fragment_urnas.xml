@@ -5,43 +5,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#AA000000" tools:context=".ui.fragments.UrnasFragment">
+    android:background="#AA000000"
+    tools:context=".ui.fragments.UrnasFragment">
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView" android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:padding="24dp"
-        android:clipToPadding="false"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/mainContainer"
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
+        <!-- Título -->
             <TextView
                 android:id="@+id/txtGestion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/titulo_dashboard"
+                android:gravity="center"
                 android:textColor="@color/colorTextLight"
                 android:textSize="26sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp" />
 
-            <LinearLayout
+            <!-- 📊 Dashboard -->
+            <androidx.gridlayout.widget.GridLayout
                 android:id="@+id/dashboardContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                app:columnCount="4"
+                app:alignmentMode="alignMargins"
+                app:columnOrderPreserved="false"
                 android:gravity="center"
-                android:weightSum="4"
+                android:layout_marginTop="20dp"
                 android:layout_marginBottom="24dp"
-                android:layout_marginTop="8dp" />
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="6dp"
+                android:background="#181818" />
 
+            <!-- 🔍 Buscador -->
             <LinearLayout
                 android:id="@+id/searchContainer"
                 android:layout_width="match_parent"
@@ -50,7 +57,8 @@
                 android:padding="12dp"
                 android:layout_marginBottom="16dp"
                 android:gravity="center_vertical"
-                android:background="#1AFFFFFF" android:clipToOutline="true">
+                android:background="#1AFFFFFF"
+                android:clipToOutline="true">
 
                 <ImageView
                     android:layout_width="20dp"
@@ -72,20 +80,22 @@
                     android:autofillHints="none" />
             </LinearLayout>
 
+            <!-- 📋 Lista -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewUrnas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="32dp"
-                android:nestedScrollingEnabled="false" android:overScrollMode="never"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
                 android:clipToPadding="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_urna_card" />
-
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
+    <!-- ⏳ Loading -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
@@ -95,6 +105,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:visibility="gone"
-        tools:visibility="visible"/>
-
+        tools:visibility="visible" />
 </androidx.constraintlayout.widget.ConstraintLayout>
