@@ -76,6 +76,11 @@ object RetrofitClient {
             .create(AuthService::class.java)
     }
 
+    fun getAuthenticatedUserService(context: Context): AuthService { // Nuevo nombre descriptivo
+        return createAuthenticatedClient(ApiConfig.BASE_URL_AUTH, context) // Usa el cliente AUTENTICADO
+            .create(AuthService::class.java)
+    }
+
     /**
      * Obtiene una instancia de UrnaService (para operaciones CRUD de urnas).
      * Usa la URL base principal (V1) y un cliente CON token automático.

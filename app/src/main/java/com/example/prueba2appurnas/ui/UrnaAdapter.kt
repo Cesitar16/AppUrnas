@@ -16,6 +16,7 @@ import com.example.prueba2appurnas.model.Urna
 import com.example.prueba2appurnas.ui.fragments.UrnaDetailFragment
 import com.example.prueba2appurnas.util.NetUtils
 
+// 1. Cambia 'urnas' a 'private var' para que pueda ser modificado
 class UrnaAdapter(private var urnas: List<Urna>) :
     RecyclerView.Adapter<UrnaAdapter.UrnaViewHolder>() {
 
@@ -48,6 +49,12 @@ class UrnaAdapter(private var urnas: List<Urna>) :
     }
 
     override fun getItemCount(): Int = urnas.size
+
+    // 2. Añade esta función para actualizar la lista desde el fragmento
+    fun updateData(newList: List<Urna>) {
+        urnas = newList
+        notifyDataSetChanged() // Notifica al RecyclerView que los datos cambiaron
+    }
 
     class UrnaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val imgUrna: ImageView = itemView.findViewById(R.id.imgUrna)
