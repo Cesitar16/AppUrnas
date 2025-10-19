@@ -5,6 +5,8 @@
 
     <!-- 🌐 Permiso para conexión a Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
 
     <application
         android:name=".App"
@@ -38,18 +40,6 @@
         <!-- 🟢 Activity principal (Home / Dashboard de urnas) -->
         <activity
             android:name=".ui.HomeActivity"
-            android:exported="false"
-            android:screenOrientation="sensor" />
-
-        <!-- 🟢 Activity de detalle de urna -->
-        <activity
-            android:name=".ui.UrnaDetailActivity"
-            android:exported="false"
-            android:screenOrientation="sensor" />
-
-        <!-- 🟢 Activity de edición de urna -->
-        <activity
-            android:name=".ui.EditUrnaActivity"
             android:exported="false"
             android:screenOrientation="sensor" />
 

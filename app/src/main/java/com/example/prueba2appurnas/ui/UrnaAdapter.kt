@@ -1,17 +1,19 @@
 package com.example.prueba2appurnas.ui
 
-import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.prueba2appurnas.R
 import com.example.prueba2appurnas.model.Urna
+import com.example.prueba2appurnas.ui.fragments.UrnaDetailFragment
 import com.example.prueba2appurnas.util.NetUtils
 
 class UrnaAdapter(private var urnas: List<Urna>) :
@@ -29,19 +31,24 @@ class UrnaAdapter(private var urnas: List<Urna>) :
 
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
-            val intent = Intent(context, UrnaDetailActivity::class.java).apply {
-                putExtra("urn", urna)
+            // Navegar a UrnaDetailFragment
+            if (context is AppCompatActivity) {
+                val detailFragment = UrnaDetailFragment.newInstance(urna) // Crea instancia
+
+                context.supportFragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, detailFragment) // Reemplaza en HomeActivity
+                    .addToBackStack(UrnaDetailFragment::class.java.simpleName) // Añade a la pila con un nombre (opcional)
+                    .commit()
+            } else {
+                Log.e("UrnaAdapter", "El contexto no es AppCompatActivity, no se puede navegar a Fragment")
+                // Opcional: Mostrar un Toast de error
+                Toast.makeText(context, "Error de navegación", Toast.LENGTH_SHORT).show()
             }
-            context.startActivity(intent)
         }
     }
 
     override fun getItemCount(): Int = urnas.size
 
-    fun updateData(newList: List<Urna>) {
-        urnas = newList
-        notifyDataSetChanged()
-    }
     class UrnaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val imgUrna: ImageView = itemView.findViewById(R.id.imgUrna)
         private val txtName: TextView = itemView.findViewById(R.id.txtUrnaName)
