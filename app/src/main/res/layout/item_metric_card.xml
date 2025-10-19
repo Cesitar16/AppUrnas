@@ -1,49 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
-    android:gravity="center"
+    android:layout_width="0dp"
+    android:layout_height="120dp"
+    android:layout_gravity="center"
+    android:gravity="center_horizontal"
     android:padding="10dp"
     android:layout_margin="6dp"
-    android:background="#33FFFFFF"
-    android:clipToOutline="true"
-    android:elevation="2dp"
-    android:minHeight="130dp">
+    android:background="#222222"
+    android:elevation="4dp"
+    android:clipToOutline="false">
 
     <!-- Ícono -->
     <ImageView
         android:id="@+id/imgMetricIcon"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_marginBottom="6dp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginBottom="4dp"
         android:contentDescription="@string/icono_busqueda"
-        app:tint="@color/colorTextLight"
-        android:visibility="visible" />
+        app:tint="@android:color/white" />
 
-    <!-- Valor (dato numérico) -->
+    <!-- Valor principal -->
     <TextView
         android:id="@+id/txtMetricValue"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="0"
-        android:textColor="@color/colorTextLight"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="17sp"
         android:textStyle="bold"
-        android:textSize="18sp"
-        android:gravity="center" />
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:layout_marginBottom="2dp"
+        android:breakStrategy="simple"
+        android:autoSizeTextType="uniform"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeMaxTextSize="18sp"
+        android:autoSizeStepGranularity="1sp"
+        tools:text="$152562" />
 
     <!-- Etiqueta -->
     <TextView
         android:id="@+id/txtMetricLabel"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Etiqueta"
-        android:textColor="@color/colorTextLight"
-        android:textSize="12sp"
         android:gravity="center"
-        android:layout_marginTop="4dp"
+        android:textColor="#CCCCCC"
+        android:textSize="12sp"
         android:maxLines="2"
-        android:ellipsize="end" />
-
+        android:ellipsize="end"
+        android:lineSpacingExtra="2dp"
+        tools:text="Precio Promedio" />
 </LinearLayout>

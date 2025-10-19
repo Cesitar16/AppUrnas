@@ -1,22 +1,35 @@
 <resources>
-    <!-- 🎨 Colores del diseño Descansos del Recuerdo -->
-    <color name="colorPrimary">#A36B4F</color>
-    <color name="colorPrimaryDark">#8B573E</color>
-    <color name="colorAccent">#D6B899</color>
-    <color name="colorButton">#B67A52</color>
-    <color name="colorTextLight">#F5E6D3</color>
-    <color name="black_overlay">#66000000</color>
+    <!-- 🌅 PALETA PRINCIPAL - Descansos del Recuerdo -->
+    <color name="colorPrimary">#A36B4F</color>        <!-- Marrón cálido -->
+    <color name="colorPrimaryDark">#8B573E</color>   <!-- Marrón oscuro -->
+    <color name="colorAccent">#D6B899</color>        <!-- Beige claro -->
+    <color name="colorAccentGold">#EAC47F</color>    <!-- Dorado suave -->
+    <color name="colorButton">#B67A52</color>        <!-- Marrón intermedio -->
+    <color name="colorTextLight">#F5E6D3</color>     <!-- Marfil claro -->
+    <color name="black_overlay">#66000000</color>    <!-- Fondo translúcido -->
 
-    <!-- 🧱 Colores por compatibilidad (evita errores) -->
+    <!-- 🖤 COLORES BASE -->
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="grayDark">#1A1A1A</color>
+    <color name="grayLight">#CCCCCC</color>
+    <color name="grayMedium">#888888</color>
+
+    <!-- 🧱 COMPATIBILIDAD (Material Design) -->
     <color name="purple_200">#BB86FC</color>
     <color name="purple_500">#6200EE</color>
     <color name="purple_700">#3700B3</color>
     <color name="teal_200">#03DAC5</color>
     <color name="teal_700">#018786</color>
-    <color name="black">#000000</color>
-    <color name="white">#FFFFFF</color>
 
-    <color name="stockNormal">#76FF03</color>  <!-- Verde brillante -->
-    <color name="stockBajo">#FF5252</color>    <!-- Rojo alerta -->
-
+    <!-- 💡 COLORES PARA DASHBOARD / ESTADOS -->
+    <color name="stockNormal">#9CF050</color>   <!-- Verde brillante pero legible -->
+    <color name="stockBajo">#E14B4B</color>     <!-- Rojo alerta más cálido -->
+    <color name="metricCardBg">#1AFFFFFF</color><!-- Fondo translúcido tarjetas -->
+    <color name="metricIcon">#F5E6D3</color>    <!-- Íconos dorado claro -->
+    <color name="metricText">#F5E6D3</color>    <!-- Texto marfil uniforme -->
+    <color name="warningGold">#FFC107</color>   <!-- Acento dorado de alerta -->
+    <color name="successGreen">#4CAF50</color>  <!-- Éxito (para futuros toasts o alertas) -->
+    <color name="errorRed">#FF5252</color>      <!-- Error -->
+    <color name="infoBlue">#2196F3</color>      <!-- Informativo -->
 </resources>

@@ -9,150 +9,88 @@
     android:background="@drawable/fondo_login_app"
     tools:context=".ui.HomeActivity">
 
-    <!-- Fondo oscuro semi-transparente -->
+    <!-- Fondo semitransparente -->
     <View
         android:id="@+id/overlay"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#AA000000" />
-
-    <!-- Contenedor principal con scroll -->
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:padding="24dp"
-        android:clipToPadding="false"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#AA000000"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
+    <!-- 🔝 Encabezado -->
+    <LinearLayout
+        android:id="@+id/headerContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- 🖼️ Logo reemplaza al título -->
+        <ImageView
+            android:id="@+id/imgLogoHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/app_name"
+            android:scaleType="fitCenter"
+            android:src="@drawable/logo_escala_ajuste_pesomenos" />
+
+        <!-- 📬 Iconos a la derecha -->
         <LinearLayout
-            android:id="@+id/mainContainer"
-            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:gravity="center">
 
-            <!-- Barra superior -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="24dp">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="16dp"
+                android:contentDescription="@string/icono_correo"
+                android:src="@android:drawable/ic_dialog_email"
+                app:tint="@color/colorTextLight" />
 
-                <!-- Logo + título -->
-                <LinearLayout
-                    android:orientation="horizontal"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="47dp"
-                        android:layout_marginEnd="8dp"
-                        android:contentDescription="@string/titulo_principal"
-                        app:srcCompat="@drawable/logo_escala_ajuste_pesomenos"
-                        app:tint="@color/colorTextLight" />
-
-                </LinearLayout>
-
-                <!-- Iconos de usuario -->
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:srcCompat="@drawable/ic_notifications"
-                    app:tint="@color/colorTextLight"
-                    android:layout_marginEnd="20dp"
-                    android:contentDescription="@string/icono_notificaciones" />
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    app:srcCompat="@drawable/ic_user"
-                    app:tint="@color/colorTextLight"
-                    android:contentDescription="@string/icono_usuario" />
-            </LinearLayout>
-
-            <!-- Botón Nueva Urna -->
-            <Button
-                android:id="@+id/btnNuevaUrna"
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/boton_nueva_urna"
-                android:paddingHorizontal="24dp"
-                android:paddingVertical="10dp"
-                android:layout_gravity="end"
-                android:layout_marginBottom="24dp"
-                app:backgroundTint="#C9A46A"
-                android:textColor="@android:color/white"
-                android:textAllCaps="false"
-                android:fontFamily="sans-serif-medium" />
-
-            <!-- Título Dashboard -->
-            <TextView
-                android:id="@+id/txtGestion"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/titulo_dashboard"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorTextLight"
-                android:layout_marginBottom="16dp" />
-
-            <!-- Dashboard dinámico (rellenado por código) -->
-            <GridLayout
-                android:id="@+id/dashboardContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:columnCount="4"
-                android:alignmentMode="alignMargins"
-                android:useDefaultMargins="true"
-                android:rowOrderPreserved="false"
-                android:layout_marginBottom="24dp" />
-
-            <!-- Buscador -->
-            <LinearLayout
-                android:id="@+id/searchContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp"
-                android:gravity="center_vertical"
-                android:background="#1AFFFFFF">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@android:drawable/ic_menu_search"
-                    app:tint="@color/colorTextLight"
-                    android:layout_marginEnd="8dp"
-                    android:contentDescription="@string/icono_busqueda" />
-
-                <EditText
-                    android:id="@+id/inputBuscar"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/hint_buscar_urnas"
-                    android:background="@null"
-                    android:textColor="@color/colorTextLight"
-                    android:textColorHint="#AAA"
-                    android:inputType="text" />
-            </LinearLayout>
-
-            <!-- Lista de urnas -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewUrnas"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="32dp"
-                android:nestedScrollingEnabled="false"
-                android:overScrollMode="never"
-                android:clipToPadding="false" />
+                android:contentDescription="@string/icono_ubicacion"
+                android:src="@android:drawable/ic_menu_myplaces"
+                app:tint="@color/colorTextLight" />
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
+
+    <!-- 📄 Contenedor de fragmentos -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/headerContainer"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- ⚓ Navegación inferior -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#DD2C2C2C"
+        app:itemIconTint="@color/bottom_nav_item_color_selector"
+        app:itemTextColor="@color/bottom_nav_item_color_selector"
+        app:menu="@menu/bottom_nav_menu"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
