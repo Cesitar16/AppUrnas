@@ -38,16 +38,24 @@ interface UrnaService {
     @Multipart
     @POST("urn")
     fun createUrnaMultipart(
-        @Part("name") name: RequestBody,
-        @Part("price") price: RequestBody,
-        @Part("stock") stock: RequestBody,
-        @Part("available") available: RequestBody,
-        @Part("short_description") shortDescription: RequestBody?, // Opcional
-        @Part("detailed_description") detailedDescription: RequestBody?, // Opcional
-        @Part imageFile: MultipartBody.Part // La imagen principal (el nombre "image_url" se define al crear la Part)
-        // Añade más @Part si necesitas enviar otros campos obligatorios u opcionales
-        // Ejemplo: @Part("color_id") colorId: RequestBody?,
-    ): Call<Urna> // Asumimos que Xano devuelve la urna creada
+        @Part("name") name: RequestBody, // Obligatorio
+        @Part("price") price: RequestBody, // Obligatorio
+        @Part("stock") stock: RequestBody, // Obligatorio
+        @Part("available") available: RequestBody, // Obligatorio
+        @Part imageFile: MultipartBody.Part, // Obligatorio (imagen principal)
+        // Campos opcionales (RequestBody?)
+        @Part("short_description") shortDescription: RequestBody?,
+        @Part("detailed_description") detailedDescription: RequestBody?,
+        @Part("internal_id") internalId: RequestBody?,
+        @Part("width") width: RequestBody?,
+        @Part("depth") depth: RequestBody?,
+        @Part("height") height: RequestBody?,
+        @Part("weight") weight: RequestBody?,
+        @Part("color_id") colorId: RequestBody?, // Si lo manejas aquí
+        @Part("material_id") materialId: RequestBody?, // Si lo manejas aquí
+        @Part("model_id") modelId: RequestBody? // Si lo manejas aquí
+        // Añade más @Part opcionales si son necesarios
+    ): Call<Urna>
 
     /**
      * Elimina una urna por su ID.

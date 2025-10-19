@@ -57,7 +57,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @OptIn(UnstableApi::class)
+    @OptIn(UnstableApi::class) // Mantén esto si lo necesitas
     private fun loginUser(email: String, password: String) {
         // Mostrar ProgressBar y deshabilitar botón (opcional pero recomendado)
         // binding.progressBar.visibility = View.VISIBLE
@@ -65,47 +65,36 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
+                // AuthService sigue siendo necesario para el login
                 val api = RetrofitClient.getAuthService(this@MainActivity)
-                // Usar suspend fun directamente
                 val response = api.login(LoginRequest(email, password))
 
                 if (response.isSuccessful) {
                     response.body()?.let { authResponse ->
-                        Log.d("MainActivity", "Login exitoso. Token: ${authResponse.authToken}, User: ${authResponse.user}") // Log remains the same
+                        // *** CORRECCIÓN PRINCIPAL ***
+                        // Solo guardamos el token
+                        Log.d("MainActivity", "Login exitoso. Guardando token: ${authResponse.authToken}")
+                        tokenManager.saveToken(authResponse.authToken) // Usa saveToken en lugar de saveAuthData
 
-                        // --- *** CORRECTION: Handle potential null user object *** ---
-                        val userName = authResponse.user?.name // Use safe call (?.)
-                        val userEmail = authResponse.user?.email // Use safe call (?.)
-                        val userRole = authResponse.user?.role // Use safe call (?.)
+                        // Ya no intentamos guardar name, email, role aquí
 
-                        tokenManager.saveAuthData(
-                            token = authResponse.authToken,
-                            name = userName,    // Pass potentially null value
-                            email = userEmail,   // Pass potentially null value
-                            role = userRole     // Pass potentially null value
-                        )
-                        // --- FIN GUARDAR DATOS ---
-
-                        // Ir a Home
+                        // Ir a Home (sin cambios)
                         startActivity(Intent(this@MainActivity, HomeActivity::class.java))
                         finish() // Cerrar MainActivity después del login exitoso
                     } ?: run {
-                        // El cuerpo de la respuesta fue nulo a pesar de ser exitosa (raro)
                         Log.w("MainActivity", "Login exitoso pero cuerpo de respuesta nulo.")
                         Toast.makeText(this@MainActivity, "Respuesta inesperada del servidor", Toast.LENGTH_SHORT).show()
                     }
                 } else {
-                    // Error de login (credenciales incorrectas, etc.)
                     val errorBody = response.errorBody()?.string() ?: "Error desconocido"
                     Log.e("MainActivity", "Error en login (${response.code()}): $errorBody")
                     Toast.makeText(this@MainActivity, "Correo o contraseña incorrectos", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
-                // Error de red u otro inesperado
                 Log.e("MainActivity", "Excepción durante login: ${e.message}", e)
                 Toast.makeText(this@MainActivity, "Error de conexión: ${e.message}", Toast.LENGTH_LONG).show()
             } finally {
-                // Ocultar ProgressBar y habilitar botón
+                // Ocultar ProgressBar y habilitar botón (sin cambios)
                 // binding.progressBar.visibility = View.GONE
                 binding.btnLogin.isEnabled = true
             }

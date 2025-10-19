@@ -179,6 +179,8 @@ class EditUrnaFragment : Fragment() {
     // --- onViewCreated ---
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        populateFields() // Llenar TODOS los campos
+        loadSpinners()
         if (currentUrna == null || !::urnaService.isInitialized || !::uploadService.isInitialized ||
             !::colorService.isInitialized || !::materialService.isInitialized || !::modelService.isInitialized ||
             !::urnaImageService.isInitialized) {
@@ -208,7 +210,17 @@ class EditUrnaFragment : Fragment() {
             binding.etDetailedDescription.setText(urna.detailed_description ?: "")
             binding.switchAvailable.isChecked = urna.available ?: true
 
+            // --- Llenar nuevos campos ---
+            binding.etInternalId.setText(urna.internal_id ?: "")
+            binding.etWidth.setText(urna.width?.toString() ?: "")
+            binding.etDepth.setText(urna.depth?.toString() ?: "")
+            binding.etHeight.setText(urna.height?.toString() ?: "")
+            binding.etWeight.setText(urna.weight?.toString() ?: "")
+            // --- Fin nuevos campos ---
+
+            // Cargar imagen principal (sin cambios)
             if (context != null) {
+                // ... (código Glide sin cambios)
                 val imagePath = urna.image_url?.path
                 val fullImageUrl = NetUtils.buildAbsoluteUrl(imagePath)
                 val glideModel = fullImageUrl?.let { NetUtils.glideModelWithAuth(requireContext(), it) }
@@ -324,62 +336,83 @@ class EditUrnaFragment : Fragment() {
         if (context == null || _binding == null || !isAdded) return
         val urnaId = currentUrna?.id ?: return
 
-        // --- Validaciones ---
+        // --- Recoger datos de TODOS los campos ---
         val name = binding.etName.text.toString().trim()
         val priceStr = binding.etPrice.text.toString().trim()
         val stockStr = binding.etStock.text.toString().trim()
-        var isValid = true
-        binding.tilName.error = if (name.isBlank()) { isValid = false; "Nombre obligatorio" } else null
-        val price = priceStr.toDoubleOrNull()
-        binding.tilPrice.error = if (price == null) { isValid = false; "Precio inválido" } else null
-        val stock = stockStr.toIntOrNull()
-        binding.tilStock.error = if (stock == null) { isValid = false; "Stock inválido" } else null
-        if (!isValid) {
-            Toast.makeText(requireContext(), "Corrige los errores", Toast.LENGTH_SHORT).show()
-            return
-        }
         val shortDesc = binding.etShortDescription.text.toString().trim()
         val detailedDesc = binding.etDetailedDescription.text.toString().trim()
         val isAvailable = binding.switchAvailable.isChecked
         val colorId = getIdFromSpinnerSelection(binding.spinnerColor, colorsList)
         val materialId = getIdFromSpinnerSelection(binding.spinnerMaterial, materialsList)
         val modelId = getIdFromSpinnerSelection(binding.spinnerModel, modelsList)
+        // Nuevos campos
+        val internalId = binding.etInternalId.text.toString().trim()
+        val widthStr = binding.etWidth.text.toString().trim()
+        val depthStr = binding.etDepth.text.toString().trim()
+        val heightStr = binding.etHeight.text.toString().trim()
+        val weightStr = binding.etWeight.text.toString().trim()
+
+
+        // --- Validación ---
+        var isValid = true
+        binding.tilName.error = if (name.isBlank()) { isValid = false; "Nombre obligatorio" } else null
+        val price = priceStr.toDoubleOrNull()
+        binding.tilPrice.error = if (priceStr.isNotBlank() && price == null) { isValid = false; "Precio inválido" } else null // Permite vacío, pero no texto inválido
+        val stock = stockStr.toIntOrNull()
+        binding.tilStock.error = if (stockStr.isNotBlank() && stock == null) { isValid = false; "Stock inválido" } else null // Permite vacío, pero no texto inválido
+
+        // Validación opcional para nuevos campos numéricos
+        val width = widthStr.toDoubleOrNull()
+        binding.tilWidth.error = if(widthStr.isNotBlank() && width == null) { isValid = false; "Ancho inválido"} else null
+        val depth = depthStr.toDoubleOrNull()
+        binding.tilDepth.error = if(depthStr.isNotBlank() && depth == null) { isValid = false; "Prof. inválida"} else null
+        val height = heightStr.toDoubleOrNull()
+        binding.tilHeight.error = if(heightStr.isNotBlank() && height == null) { isValid = false; "Alto inválido"} else null
+        val weight = weightStr.toDoubleOrNull()
+        binding.tilWeight.error = if(weightStr.isNotBlank() && weight == null) { isValid = false; "Peso inválido"} else null
+
+
+        if (!isValid) {
+            Toast.makeText(requireContext(), "Corrige los errores marcados", Toast.LENGTH_SHORT).show()
+            return
+        }
         // --- Fin Validaciones ---
+
 
         showLoading(true)
 
-        // Si se seleccionó una NUEVA imagen principal -> Flujo de 2 pasos
+        // Lógica de subida de imagen (si cambió) y llamada a updateUrnaApiCall (sin cambios estructurales)
         if (selectedMainImageUri != null) {
+            // ... (código de subida de imagen y llamada a updateUrnaApiCall con nueva ImageUrl)
             Log.d("EditUrnaFragment", "Guardando cambios CON nueva imagen principal...")
             try {
-                // PASO 1: Subir nueva imagen a /upload/image
-                val imagePart = createImagePart(requireContext(), selectedMainImageUri!!, "image") // Campo esperado por /upload/image
+                val imagePart = createImagePart(requireContext(), selectedMainImageUri!!, "image")
                 uploadService.uploadImage(imagePart).enqueue(object : Callback<ImageUrl> {
                     override fun onResponse(call: Call<ImageUrl>, response: Response<ImageUrl>) {
                         if (!isAdded || _binding == null) return
                         if (response.isSuccessful && response.body() != null) {
                             Log.d("EditUrnaFragment", "Paso 1 (Guardar) Exitoso. Nueva ImageUrl: ${response.body()!!.path}")
-                            // PASO 2: Actualizar urna con PATCH /urn/{id}, enviando la NUEVA ImageUrl
-                            updateUrnaApiCall(urnaId, name, price!!, stock!!, shortDesc, detailedDesc, isAvailable, colorId, materialId, modelId, response.body()!!)
+                            updateUrnaApiCall(urnaId, name, price, stock, shortDesc, detailedDesc, isAvailable, colorId, materialId, modelId, internalId, width, depth, height, weight, response.body()!!) // Pasar nuevos valores
                         } else {
                             Log.e("EditUrnaFragment", "Error Paso 1 (Guardar): ${response.code()}")
-                            handleUploadError(response) // Maneja error de subida y oculta loading
+                            handleUploadError(response)
                         }
                     }
                     override fun onFailure(call: Call<ImageUrl>, t: Throwable) {
                         if (!isAdded || _binding == null) return
                         Log.e("EditUrnaFragment", "Fallo red Paso 1 (Guardar)", t)
-                        handleUploadFailure(t) // Maneja fallo de red y oculta loading
+                        handleUploadFailure(t)
                     }
                 })
             } catch (e: Exception) {
                 Log.e("EditUrnaFragment", "Error creando Part Paso 1 (Guardar)", e)
-                handleImageProcessingError(e) // Maneja error local y oculta loading
+                handleImageProcessingError(e)
             }
         } else {
-            // SI NO se seleccionó nueva imagen principal -> Actualizar solo datos (ImageUrl = null)
+            // Llamar a updateUrnaApiCall SIN nueva ImageUrl
             Log.d("EditUrnaFragment", "Guardando cambios SIN nueva imagen principal...")
-            updateUrnaApiCall(urnaId, name, price!!, stock!!, shortDesc, detailedDesc, isAvailable, colorId, materialId, modelId, null)
+            updateUrnaApiCall(urnaId, name, price, stock, shortDesc, detailedDesc, isAvailable, colorId, materialId, modelId, internalId, width, depth, height, weight, null) // Pasar nuevos valores
         }
     }
 
@@ -399,16 +432,22 @@ class EditUrnaFragment : Fragment() {
 
     // --- updateUrnaApiCall (Llama a PATCH /urn) ---
     private fun updateUrnaApiCall(
-        urnaId: Int, name: String, price: Double, stock: Int, shortDesc: String,
-        detailedDesc: String, available: Boolean, colorId: Int?, materialId: Int?,
-        modelId: Int?, newImageUrl: ImageUrl? // Acepta ImageUrl o null
+        urnaId: Int, name: String, price: Double?, stock: Int?, shortDesc: String?,
+        detailedDesc: String?, available: Boolean, colorId: Int?, materialId: Int?,
+        modelId: Int?,
+        // --- Nuevos parámetros ---
+        internalId: String?, width: Double?, depth: Double?, height: Double?, weight: Double?,
+        // --- Fin nuevos ---
+        newImageUrl: ImageUrl?
     ) {
         if (context == null || _binding == null || !isAdded) return
 
-        // Construir dataMap SOLO con campos modificados
         val dataMap = mutableMapOf<String, @JvmSuppressWildcards Any?>()
+
+        // Compara cada campo con el valor actual y añade al mapa si cambió
         if (name != currentUrna?.name) dataMap["name"] = name
-        if (abs(price - (currentUrna?.price ?: -1.0)) > 0.001) dataMap["price"] = price
+        // Compara doubles con tolerancia
+        if (price != null && abs(price - (currentUrna?.price ?: Double.NaN)) > 0.001) dataMap["price"] = price else if (price == null && currentUrna?.price != null) dataMap["price"] = null
         if (stock != currentUrna?.stock) dataMap["stock"] = stock
         if (available != currentUrna?.available) dataMap["available"] = available
         if (shortDesc != (currentUrna?.short_description ?: "")) dataMap["short_description"] = shortDesc
@@ -416,7 +455,15 @@ class EditUrnaFragment : Fragment() {
         if (colorId != currentUrna?.color_id) dataMap["color_id"] = colorId
         if (materialId != currentUrna?.material_id) dataMap["material_id"] = materialId
         if (modelId != currentUrna?.model_id) dataMap["model_id"] = modelId
-        if (newImageUrl != null) dataMap["image_url"] = newImageUrl // Clave para imagen principal
+        if (newImageUrl != null) dataMap["image_url"] = newImageUrl // Añade la nueva imagen si existe
+
+        // --- Añadir nuevos campos al mapa si cambiaron ---
+        if (internalId != (currentUrna?.internal_id ?: "")) dataMap["internal_id"] = internalId
+        if (width != null && abs(width - (currentUrna?.width ?: Double.NaN)) > 0.001) dataMap["width"] = width else if (width == null && currentUrna?.width != null) dataMap["width"] = null
+        if (depth != null && abs(depth - (currentUrna?.depth ?: Double.NaN)) > 0.001) dataMap["depth"] = depth else if (depth == null && currentUrna?.depth != null) dataMap["depth"] = null
+        if (height != null && abs(height - (currentUrna?.height ?: Double.NaN)) > 0.001) dataMap["height"] = height else if (height == null && currentUrna?.height != null) dataMap["height"] = null
+        if (weight != null && abs(weight - (currentUrna?.weight ?: Double.NaN)) > 0.001) dataMap["weight"] = weight else if (weight == null && currentUrna?.weight != null) dataMap["weight"] = null
+        // --- Fin ---
 
         if (dataMap.isEmpty()) {
             Toast.makeText(context, "No se detectaron cambios", Toast.LENGTH_SHORT).show()
@@ -434,9 +481,8 @@ class EditUrnaFragment : Fragment() {
                 if (response.isSuccessful) {
                     Log.i("EditUrnaFragment", "Paso 2 (Guardar) Exitoso. Urna actualizada.")
                     Toast.makeText(context, "Urna actualizada correctamente", Toast.LENGTH_SHORT).show()
-                    // Limpiar la URI seleccionada para evitar re-subida accidental si se vuelve a guardar
                     selectedMainImageUri = null
-                    parentFragmentManager.popBackStack() // Volver a la pantalla anterior
+                    parentFragmentManager.popBackStack()
                 } else {
                     val errorBody = response.errorBody()?.string() ?: "N/A"
                     Log.e("EditUrnaFragment", "Error API ${response.code()} en Paso 2 (Guardar): $errorBody")
