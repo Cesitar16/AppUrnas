@@ -15,71 +15,74 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
-import android.widget.ArrayAdapter // Necesario para Spinners
-import android.widget.Spinner    // Necesario para Spinners
+// import android.widget.ArrayAdapter // Ya no es necesario aquí
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager // Necesario para popBackStack
+// import androidx.fragment.app.Fragment // Ahora hereda de BaseUrnaFormFragment
+import androidx.fragment.app.FragmentManager
 import com.bumptech.glide.Glide
 import com.example.prueba2appurnas.R
-import com.example.prueba2appurnas.api.* // Importar todos los servicios y data classes necesarios
-import com.example.prueba2appurnas.databinding.FragmentEditUrnaBinding // Asegúrate que el layout se llama fragment_edit_urna.xml
-import com.example.prueba2appurnas.model.* // Importar modelos (Urna, Color, Material, Model, UrnaImage, ImageUrl)
+import com.example.prueba2appurnas.api.*
+import com.example.prueba2appurnas.databinding.FragmentEditUrnaBinding
+import com.example.prueba2appurnas.model.*
 import com.example.prueba2appurnas.util.NetUtils
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody // Necesario para @Multipart
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.IOException // Necesario para createImagePart
+import java.io.IOException
 import kotlin.math.abs
 
-class EditUrnaFragment : Fragment() {
+// 1. Heredar de BaseUrnaFormFragment
+class EditUrnaFragment : BaseUrnaFormFragment() {
 
-    // --- Variables de Binding y Servicios ---
     private var _binding: FragmentEditUrnaBinding? = null
     private val binding get() = _binding!!
 
+    // Servicios Urna y Upload
     private lateinit var urnaService: UrnaService
-    private lateinit var uploadService: UploadService // Necesario si cambias img principal (PATCH usa 2 pasos)
-    private lateinit var colorService: ColorService
-    private lateinit var materialService: MaterialService
-    private lateinit var modelService: ModelService
-    private lateinit var urnaImageService: UrnaImageService // Clave para añadir a galería con @Multipart
+    private lateinit var uploadService: UploadService
+    private lateinit var urnaImageService: UrnaImageService
 
-    // --- Listas y Datos ---
-    private var colorsList: List<Color> = emptyList()
-    private var materialsList: List<Material> = emptyList()
-    private var modelsList: List<Model> = emptyList()
+    // --- Listas y Servicios de Spinners (Color, Material, Model) movidos a BaseUrnaFormFragment ---
+
     private var currentUrna: Urna? = null
-    private var selectedMainImageUri: Uri? = null // Para cambiar imagen principal
-    private var isSelectingForMainImage: Boolean = true // Para diferenciar acción de selección
+    private var selectedMainImageUri: Uri? = null
+    private var isSelectingForMainImage: Boolean = true
 
-    // --- Contadores para Subida Múltiple ---
+    // Contadores de subida (sin cambios)
     private var uploadTotalCount = 0
     private var uploadSuccessCount = 0
     private var uploadErrorCount = 0
     private var progressToast: Toast? = null
 
-    // --- ActivityResultLaunchers ---
-    // Launcher para selección simple (cambiar imagen principal)
+    // Launchers de imágenes (sin cambios)
     private val pickSingleImageLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            handleImageSelectionResult(result, false) // false = no múltiple
+            handleImageSelectionResult(result, false)
         }
-
-    // Launcher para selección múltiple (añadir a galería)
     private val pickMultipleImagesLauncher =
         registerForActivityResult(ActivityResultContracts.GetMultipleContents()) { uris: List<Uri>? ->
-            handleImageSelectionResult(null, true, uris) // true = múltiple
+            handleImageSelectionResult(null, true, uris)
+        }
+    private val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                Log.d("EditUrnaFragment", "Permiso concedido.")
+                launchGallery()
+            } else {
+                Log.w("EditUrnaFragment", "Permiso denegado.")
+                if (context != null) Toast.makeText(requireContext(), "Permiso necesario", Toast.LENGTH_LONG).show()
+            }
         }
 
-    // Función unificada para manejar resultado de selección
+    // Función unificada (sin cambios)
     private fun handleImageSelectionResult(result: androidx.activity.result.ActivityResult?, isMultiple: Boolean, uris: List<Uri>? = null) {
         val selectedUris = mutableListOf<Uri>()
 
@@ -92,37 +95,23 @@ class EditUrnaFragment : Fragment() {
         }
 
         if (selectedUris.isNotEmpty()) {
-            if (isSelectingForMainImage) { // Cambiar imagen principal
+            if (isSelectingForMainImage) {
                 selectedMainImageUri = selectedUris[0]
                 if (context != null && _binding != null) {
                     Glide.with(requireContext()).load(selectedMainImageUri).centerCrop()
                         .placeholder(R.drawable.bg_image_border).into(binding.ivUrnaImage)
                 }
                 Log.d("EditUrnaFragment", "Nueva img principal seleccionada: ${selectedMainImageUri}")
-            } else { // Añadir a galería
+            } else {
                 Log.d("EditUrnaFragment", "${selectedUris.size} imágenes seleccionadas para galería.")
-                // *** CORRECCIÓN: LLAMAR A LA FUNCIÓN MULTIPART ***
-                uploadMultipleImagesToGalleryMultipart(selectedUris) // Inicia subida múltiple con @Multipart
+                uploadMultipleImagesToGalleryMultipart(selectedUris)
             }
         } else {
             Log.w("EditUrnaFragment", "Selección de imagen(es) cancelada o vacía.")
         }
     }
 
-
-    // Launcher para permisos
-    private val requestPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
-            if (isGranted) {
-                Log.d("EditUrnaFragment", "Permiso concedido.")
-                launchGallery() // Reintentar lanzar selector
-            } else {
-                Log.w("EditUrnaFragment", "Permiso denegado.")
-                if (context != null) Toast.makeText(requireContext(), "Permiso necesario", Toast.LENGTH_LONG).show()
-            }
-        }
-
-    // --- newInstance ---
+    // --- newInstance (Sin cambios) ---
     companion object {
         private const val ARG_URNA = "urn_arg"
         fun newInstance(urna: Urna): EditUrnaFragment {
@@ -134,10 +123,8 @@ class EditUrnaFragment : Fragment() {
         }
     }
 
-    // --- onCreate ---
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        // Recuperar Urna
+        // Recuperar Urna ANTES de llamar a super.onCreate()
         arguments?.let {
             currentUrna = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 it.getSerializable(ARG_URNA, Urna::class.java)
@@ -152,14 +139,13 @@ class EditUrnaFragment : Fragment() {
             return
         }
 
-        // Inicializar servicios
+        super.onCreate(savedInstanceState) // Llama a onCreate de la base
+
+        // Inicializar servicios restantes
         try {
             if (context == null) throw IllegalStateException("Contexto nulo al inicializar servicios")
             urnaService = RetrofitClient.getUrnaService(requireContext())
             uploadService = RetrofitClient.getUploadService(requireContext())
-            colorService = RetrofitClient.getColorService(requireContext())
-            materialService = RetrofitClient.getMaterialService(requireContext())
-            modelService = RetrofitClient.getModelService(requireContext())
             urnaImageService = RetrofitClient.getUrnaImageService(requireContext())
         } catch (e: Exception) {
             Log.e("EditUrnaFragment", "Error inicializando servicios: ${e.message}", e)
@@ -178,29 +164,66 @@ class EditUrnaFragment : Fragment() {
 
     // --- onViewCreated ---
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        populateFields() // Llenar TODOS los campos
-        loadSpinners()
+        super.onViewCreated(view, savedInstanceState) // Llama a onViewCreated de la base
+
+        // --- INICIO DE LA CORRECCIÓN ---
+        // Se eliminó la comprobación de ::colorService, ::materialService y ::modelService
+        // Solo comprobamos las variables locales de ESTA clase.
         if (currentUrna == null || !::urnaService.isInitialized || !::uploadService.isInitialized ||
-            !::colorService.isInitialized || !::materialService.isInitialized || !::modelService.isInitialized ||
             !::urnaImageService.isInitialized) {
-            Log.e("EditUrnaFragment", "Fallo en inicialización o datos. Cerrando.")
+            Log.e("EditUrnaFragment", "Fallo en inicialización (urna o servicios locales) o datos. Cerrando.")
             if(context != null) Toast.makeText(context, "Error al iniciar pantalla", Toast.LENGTH_SHORT).show()
             if (isAdded) parentFragmentManager.popBackStack()
             return
         }
+        // --- FIN DE LA CORRECCIÓN ---
 
         populateFields()
-        loadSpinners()
+
+        // 2. Llamar al método de carga de la clase base
+        // (Este método YA comprueba internamente los servicios de la base)
+        loadSpinnersSequentially()
 
         // Listeners
-        binding.btnSelectImage.setOnClickListener { selectImage(true) }       // Cambiar img principal
-        binding.btnAddGalleryImage.setOnClickListener { selectImage(false) }   // Añadir a galería
-        binding.btnSaveChanges.setOnClickListener { saveUrnaChanges() }       // Guardar cambios urna
-        binding.btnDeleteUrna.setOnClickListener { showDeleteConfirmationDialog() } // Eliminar urna
+        binding.btnSelectImage.setOnClickListener { selectImage(true) }
+        binding.btnAddGalleryImage.setOnClickListener { selectImage(false) }
+        binding.btnSaveChanges.setOnClickListener { saveUrnaChanges() }
+        binding.btnDeleteUrna.setOnClickListener { showDeleteConfirmationDialog() }
     }
 
-    // --- populateFields ---
+    // --- 3. Implementar métodos abstractos de la clase base ---
+
+    override fun showMainLoading(isLoading: Boolean) {
+        _binding?.let {
+            it.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            it.btnSaveChanges.isEnabled = !isLoading
+            it.btnDeleteUrna.isEnabled = !isLoading
+            it.btnSelectImage.isEnabled = !isLoading
+            it.btnAddGalleryImage.isEnabled = !isLoading
+        }
+    }
+
+    override fun showSpinnerLoading(isLoading: Boolean) {
+        _binding?.let {
+            // Usamos el mismo ProgressBar general
+            it.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+            it.spinnerColor.isEnabled = !isLoading
+            it.spinnerMaterial.isEnabled = !isLoading
+            it.spinnerModel.isEnabled = !isLoading
+        }
+    }
+
+    override fun getColorSpinner(): Spinner? = _binding?.spinnerColor
+    override fun getMaterialSpinner(): Spinner? = _binding?.spinnerMaterial
+    override fun getModelSpinner(): Spinner? = _binding?.spinnerModel
+
+    // Para "Editar", devolvemos el ID de la urna actual
+    override fun getSelectedColorId(): Int? = currentUrna?.color_id
+    override fun getSelectedMaterialId(): Int? = currentUrna?.material_id
+    override fun getSelectedModelId(): Int? = currentUrna?.model_id
+
+
+    // --- populateFields (Sin cambios) ---
     private fun populateFields() {
         currentUrna?.let { urna ->
             binding.etName.setText(urna.name ?: "")
@@ -209,18 +232,13 @@ class EditUrnaFragment : Fragment() {
             binding.etShortDescription.setText(urna.short_description ?: "")
             binding.etDetailedDescription.setText(urna.detailed_description ?: "")
             binding.switchAvailable.isChecked = urna.available ?: true
-
-            // --- Llenar nuevos campos ---
             binding.etInternalId.setText(urna.internal_id ?: "")
             binding.etWidth.setText(urna.width?.toString() ?: "")
             binding.etDepth.setText(urna.depth?.toString() ?: "")
             binding.etHeight.setText(urna.height?.toString() ?: "")
             binding.etWeight.setText(urna.weight?.toString() ?: "")
-            // --- Fin nuevos campos ---
 
-            // Cargar imagen principal (sin cambios)
             if (context != null) {
-                // ... (código Glide sin cambios)
                 val imagePath = urna.image_url?.path
                 val fullImageUrl = NetUtils.buildAbsoluteUrl(imagePath)
                 val glideModel = fullImageUrl?.let { NetUtils.glideModelWithAuth(requireContext(), it) }
@@ -232,67 +250,9 @@ class EditUrnaFragment : Fragment() {
         }
     }
 
-    // --- loadSpinners ---
-    private fun loadSpinners() {
-        colorService.getAllColors().enqueue(createSpinnerCallback(binding.spinnerColor, colorsList, { colorsList = it }, currentUrna?.color_id, "colores"))
-        materialService.getAllMaterials().enqueue(createSpinnerCallback(binding.spinnerMaterial, materialsList, { materialsList = it }, currentUrna?.material_id, "materiales"))
-        modelService.getAllModels().enqueue(createSpinnerCallback(binding.spinnerModel, modelsList, { modelsList = it }, currentUrna?.model_id, "modelos"))
-    }
+    // --- Toda la lógica de carga de spinners (loadSpinners, createSpinnerCallback, etc.) FUE MOVIDA A LA BASE ---
 
-    // --- createSpinnerCallback (Genérico) ---
-    private fun <T> createSpinnerCallback(
-        spinner: Spinner, dataList: List<T>, updateDataList: (List<T>) -> Unit,
-        currentSelectedId: Int?, dataTypeName: String
-    ): Callback<List<T>> where T : Any {
-        return object : Callback<List<T>> {
-            override fun onResponse(call: Call<List<T>>, response: Response<List<T>>) {
-                if (!isAdded || _binding == null || context == null) return
-                if (response.isSuccessful) {
-                    val newList = response.body() ?: emptyList()
-                    updateDataList(newList)
-                    val names = newList.map { item ->
-                        when (item) {
-                            is Color -> item.name.takeIf { !it.isNullOrBlank() } ?: "ID: ${item.id}"
-                            is Material -> item.name.takeIf { !it.isNullOrBlank() } ?: "ID: ${item.id}"
-                            is Model -> item.name.takeIf { !it.isNullOrBlank() } ?: "ID: ${item.id}"
-                            else -> item.toString()
-                        }
-                    }
-                    val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, names)
-                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                    spinner.adapter = adapter
-                    currentSelectedId?.let { currentId ->
-                        val position = newList.indexOfFirst { item ->
-                            when (item) {
-                                is Color -> item.id == currentId
-                                is Material -> item.id == currentId
-                                is Model -> item.id == currentId
-                                else -> false
-                            }
-                        }
-                        if (position >= 0) spinner.setSelection(position, false)
-                        else if (spinner.adapter.count > 0) spinner.setSelection(0)
-                    } ?: if (spinner.adapter.count > 0) spinner.setSelection(0) else TODO()
-                } else handleApiError(dataTypeName, response.code(), response.message())
-            }
-            override fun onFailure(call: Call<List<T>>, t: Throwable) {
-                if (!isAdded || _binding == null || context == null) return
-                handleApiFailure(dataTypeName, t)
-            }
-        }
-    }
-
-    // --- handleApiError / handleApiFailure (Spinners) ---
-    private fun handleApiError(dataType: String, code: Int, message: String?) {
-        Log.e("EditUrnaFragment", "Error API $dataType: $code - $message")
-        if (context != null) Toast.makeText(context, "Error cargando $dataType", Toast.LENGTH_SHORT).show()
-    }
-    private fun handleApiFailure(dataType: String, t: Throwable) {
-        Log.e("EditUrnaFragment", "Fallo red $dataType", t)
-        if (context != null) Toast.makeText(context, "Fallo red $dataType", Toast.LENGTH_SHORT).show()
-    }
-
-    // --- Selección Imagen y Permisos (Unificado) ---
+    // --- Selección Imagen y Permisos (Sin cambios) ---
     private fun selectImage(isForMain: Boolean) {
         if (context == null) return
         isSelectingForMainImage = isForMain
@@ -309,19 +269,16 @@ class EditUrnaFragment : Fragment() {
         }
     }
 
-    // Lanza el selector adecuado
     private fun launchGallery() {
         if (context == null || activity == null) return
         try {
             if (isSelectingForMainImage) {
-                // Selector SIMPLE para imagen principal
                 val intent = Intent(Intent.ACTION_GET_CONTENT).apply { type = "image/*" }
                 if (intent.resolveActivity(requireActivity().packageManager) != null) {
                     pickSingleImageLauncher.launch(intent)
                 } else throw ActivityNotFoundException("No gallery app found") as Throwable
             } else {
-                // Selector MÚLTIPLE para galería
-                pickMultipleImagesLauncher.launch("image/*") // Usa el launcher múltiple directo
+                pickMultipleImagesLauncher.launch("image/*")
             }
         } catch (e: Exception) {
             Log.e("EditUrnaFragment", "Error al lanzar galería: ${e.message}")
@@ -331,22 +288,22 @@ class EditUrnaFragment : Fragment() {
 
 
     // --- Guardar Cambios Urna (PATCH /urn) ---
-    // Mantiene el flujo de 2 pasos si la imagen principal cambió
     private fun saveUrnaChanges() {
         if (context == null || _binding == null || !isAdded) return
         val urnaId = currentUrna?.id ?: return
 
-        // --- Recoger datos de TODOS los campos ---
         val name = binding.etName.text.toString().trim()
         val priceStr = binding.etPrice.text.toString().trim()
         val stockStr = binding.etStock.text.toString().trim()
         val shortDesc = binding.etShortDescription.text.toString().trim()
         val detailedDesc = binding.etDetailedDescription.text.toString().trim()
         val isAvailable = binding.switchAvailable.isChecked
+
+        // 4. Usar el método de la clase base para obtener los IDs
         val colorId = getIdFromSpinnerSelection(binding.spinnerColor, colorsList)
         val materialId = getIdFromSpinnerSelection(binding.spinnerMaterial, materialsList)
         val modelId = getIdFromSpinnerSelection(binding.spinnerModel, modelsList)
-        // Nuevos campos
+
         val internalId = binding.etInternalId.text.toString().trim()
         val widthStr = binding.etWidth.text.toString().trim()
         val depthStr = binding.etDepth.text.toString().trim()
@@ -354,15 +311,13 @@ class EditUrnaFragment : Fragment() {
         val weightStr = binding.etWeight.text.toString().trim()
 
 
-        // --- Validación ---
+        // Validaciones (sin cambios)
         var isValid = true
         binding.tilName.error = if (name.isBlank()) { isValid = false; "Nombre obligatorio" } else null
         val price = priceStr.toDoubleOrNull()
-        binding.tilPrice.error = if (priceStr.isNotBlank() && price == null) { isValid = false; "Precio inválido" } else null // Permite vacío, pero no texto inválido
+        binding.tilPrice.error = if (priceStr.isNotBlank() && price == null) { isValid = false; "Precio inválido" } else null
         val stock = stockStr.toIntOrNull()
-        binding.tilStock.error = if (stockStr.isNotBlank() && stock == null) { isValid = false; "Stock inválido" } else null // Permite vacío, pero no texto inválido
-
-        // Validación opcional para nuevos campos numéricos
+        binding.tilStock.error = if (stockStr.isNotBlank() && stock == null) { isValid = false; "Stock inválido" } else null
         val width = widthStr.toDoubleOrNull()
         binding.tilWidth.error = if(widthStr.isNotBlank() && width == null) { isValid = false; "Ancho inválido"} else null
         val depth = depthStr.toDoubleOrNull()
@@ -377,14 +332,11 @@ class EditUrnaFragment : Fragment() {
             Toast.makeText(requireContext(), "Corrige los errores marcados", Toast.LENGTH_SHORT).show()
             return
         }
-        // --- Fin Validaciones ---
 
+        showMainLoading(true) // Usar el método implementado
 
-        showLoading(true)
-
-        // Lógica de subida de imagen (si cambió) y llamada a updateUrnaApiCall (sin cambios estructurales)
+        // Lógica de subida (sin cambios)
         if (selectedMainImageUri != null) {
-            // ... (código de subida de imagen y llamada a updateUrnaApiCall con nueva ImageUrl)
             Log.d("EditUrnaFragment", "Guardando cambios CON nueva imagen principal...")
             try {
                 val imagePart = createImagePart(requireContext(), selectedMainImageUri!!, "image")
@@ -393,7 +345,7 @@ class EditUrnaFragment : Fragment() {
                         if (!isAdded || _binding == null) return
                         if (response.isSuccessful && response.body() != null) {
                             Log.d("EditUrnaFragment", "Paso 1 (Guardar) Exitoso. Nueva ImageUrl: ${response.body()!!.path}")
-                            updateUrnaApiCall(urnaId, name, price, stock, shortDesc, detailedDesc, isAvailable, colorId, materialId, modelId, internalId, width, depth, height, weight, response.body()!!) // Pasar nuevos valores
+                            updateUrnaApiCall(urnaId, name, price, stock, shortDesc, detailedDesc, isAvailable, colorId, materialId, modelId, internalId, width, depth, height, weight, response.body()!!)
                         } else {
                             Log.e("EditUrnaFragment", "Error Paso 1 (Guardar): ${response.code()}")
                             handleUploadError(response)
@@ -410,43 +362,23 @@ class EditUrnaFragment : Fragment() {
                 handleImageProcessingError(e)
             }
         } else {
-            // Llamar a updateUrnaApiCall SIN nueva ImageUrl
             Log.d("EditUrnaFragment", "Guardando cambios SIN nueva imagen principal...")
-            updateUrnaApiCall(urnaId, name, price, stock, shortDesc, detailedDesc, isAvailable, colorId, materialId, modelId, internalId, width, depth, height, weight, null) // Pasar nuevos valores
+            updateUrnaApiCall(urnaId, name, price, stock, shortDesc, detailedDesc, isAvailable, colorId, materialId, modelId, internalId, width, depth, height, weight, null)
         }
     }
 
-    // --- Helper getIdFromSpinnerSelection (Genérico) ---
-    private fun <T> getIdFromSpinnerSelection(spinner: Spinner, dataList: List<T>): Int? where T: Any {
-        val position = spinner.selectedItemPosition
-        if (position < 0 || position >= dataList.size) return null
-        return try {
-            when (val item = dataList[position]) {
-                is Color -> item.id
-                is Material -> item.id
-                is Model -> item.id
-                else -> null
-            }
-        } catch (e: IndexOutOfBoundsException) { null }
-    }
-
-    // --- updateUrnaApiCall (Llama a PATCH /urn) ---
+    // --- updateUrnaApiCall (Sin cambios) ---
     private fun updateUrnaApiCall(
         urnaId: Int, name: String, price: Double?, stock: Int?, shortDesc: String?,
         detailedDesc: String?, available: Boolean, colorId: Int?, materialId: Int?,
         modelId: Int?,
-        // --- Nuevos parámetros ---
         internalId: String?, width: Double?, depth: Double?, height: Double?, weight: Double?,
-        // --- Fin nuevos ---
         newImageUrl: ImageUrl?
     ) {
         if (context == null || _binding == null || !isAdded) return
 
         val dataMap = mutableMapOf<String, @JvmSuppressWildcards Any?>()
-
-        // Compara cada campo con el valor actual y añade al mapa si cambió
         if (name != currentUrna?.name) dataMap["name"] = name
-        // Compara doubles con tolerancia
         if (price != null && abs(price - (currentUrna?.price ?: Double.NaN)) > 0.001) dataMap["price"] = price else if (price == null && currentUrna?.price != null) dataMap["price"] = null
         if (stock != currentUrna?.stock) dataMap["stock"] = stock
         if (available != currentUrna?.available) dataMap["available"] = available
@@ -455,19 +387,16 @@ class EditUrnaFragment : Fragment() {
         if (colorId != currentUrna?.color_id) dataMap["color_id"] = colorId
         if (materialId != currentUrna?.material_id) dataMap["material_id"] = materialId
         if (modelId != currentUrna?.model_id) dataMap["model_id"] = modelId
-        if (newImageUrl != null) dataMap["image_url"] = newImageUrl // Añade la nueva imagen si existe
-
-        // --- Añadir nuevos campos al mapa si cambiaron ---
+        if (newImageUrl != null) dataMap["image_url"] = newImageUrl
         if (internalId != (currentUrna?.internal_id ?: "")) dataMap["internal_id"] = internalId
         if (width != null && abs(width - (currentUrna?.width ?: Double.NaN)) > 0.001) dataMap["width"] = width else if (width == null && currentUrna?.width != null) dataMap["width"] = null
         if (depth != null && abs(depth - (currentUrna?.depth ?: Double.NaN)) > 0.001) dataMap["depth"] = depth else if (depth == null && currentUrna?.depth != null) dataMap["depth"] = null
         if (height != null && abs(height - (currentUrna?.height ?: Double.NaN)) > 0.001) dataMap["height"] = height else if (height == null && currentUrna?.height != null) dataMap["height"] = null
         if (weight != null && abs(weight - (currentUrna?.weight ?: Double.NaN)) > 0.001) dataMap["weight"] = weight else if (weight == null && currentUrna?.weight != null) dataMap["weight"] = null
-        // --- Fin ---
 
         if (dataMap.isEmpty()) {
             Toast.makeText(context, "No se detectaron cambios", Toast.LENGTH_SHORT).show()
-            showLoading(false)
+            showMainLoading(false) // Usar el método implementado
             return
         }
 
@@ -477,7 +406,7 @@ class EditUrnaFragment : Fragment() {
         urnaService.updateUrna(urnaId, finalDataMap).enqueue(object : Callback<Urna> {
             override fun onResponse(call: Call<Urna>, response: Response<Urna>) {
                 if (!isAdded || _binding == null) return
-                showLoading(false)
+                showMainLoading(false) // Usar el método implementado
                 if (response.isSuccessful) {
                     Log.i("EditUrnaFragment", "Paso 2 (Guardar) Exitoso. Urna actualizada.")
                     Toast.makeText(context, "Urna actualizada correctamente", Toast.LENGTH_SHORT).show()
@@ -491,43 +420,35 @@ class EditUrnaFragment : Fragment() {
             }
             override fun onFailure(call: Call<Urna>, t: Throwable) {
                 if (!isAdded || _binding == null) return
-                showLoading(false)
+                showMainLoading(false) // Usar el método implementado
                 Log.e("EditUrnaFragment", "Fallo red en Paso 2 (Guardar)", t)
                 Toast.makeText(context, "Fallo de red al guardar: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-
-    // Sube UNA imagen usando la función addUrnaImageMultipart (que usa @Multipart)
+    // --- Lógica de subida múltiple a galería (Sin cambios) ---
     private fun uploadSingleImageToGalleryMultipart(urnaId: Int, imageUri: Uri, imageIndex: Int) {
-        if (context == null || !isAdded) return // Doble chequeo
+        if (context == null || !isAdded) return
 
         try {
-            // *** CORRECCIÓN AQUÍ: Crear RequestBody y MultipartBody.Part ***
-            // Crear partes Multipart para los datos de texto ANTES de la llamada
             val urnaIdPart = createTextPart(urnaId.toString())
-            // Puedes hacer que el alt sea más descriptivo o dejarlo genérico
-            val altPart = createTextPart("Galería ${System.currentTimeMillis()}") // Placeholder como ejemplo
-            val isCoverPart = createTextPart("false") // Convertir booleano a String
-            val sortOrderPart: RequestBody? = null // Crear si tienes valor, ej: createTextPart("1")
-
-            // Crear parte Multipart para la imagen
-            // ¡CRUCIAL! Usa el nombre "url" o el que espere tu API POST /urn_image para el archivo
-            val imageFilePart = createImagePart(requireContext(), imageUri, "url") // Usa "url" o el nombre correcto
+            val altPart = createTextPart("Galería ${System.currentTimeMillis()}")
+            val isCoverPart = createTextPart("false")
+            val sortOrderPart: RequestBody? = null
+            val imageFilePart = createImagePart(requireContext(), imageUri, "url")
 
             Log.d("EditUrnaFragment", "Llamando a addUrnaImageMultipart para imagen ${imageIndex + 1}...")
 
-            // *** Llamar a addUrnaImageMultipart con las partes CREADAS ***
             urnaImageService.addUrnaImageMultipart(
-                urnaId = urnaIdPart,        // Pasar RequestBody creado
-                altText = altPart,         // Pasar RequestBody creado (o null)
-                isCover = isCoverPart,      // Pasar RequestBody creado (o null)
-                sortOrder = sortOrderPart,   // Pasar RequestBody creado (o null)
-                imageFile = imageFilePart    // Pasar MultipartBody.Part creado
-            ).enqueue(object : Callback<UrnaImage> { //
+                urnaId = urnaIdPart,
+                altText = altPart,
+                isCover = isCoverPart,
+                sortOrder = sortOrderPart,
+                imageFile = imageFilePart
+            ).enqueue(object : Callback<UrnaImage> {
                 override fun onResponse(call: Call<UrnaImage>, response: Response<UrnaImage>) {
-                    if (!isAdded) return // Verificar fragmento
+                    if (!isAdded) return
                     if (response.isSuccessful) {
                         Log.i("EditUrnaFragment", "Img Galería ${imageIndex + 1} subida OK (Multipart).")
                         uploadSuccessCount++
@@ -536,39 +457,35 @@ class EditUrnaFragment : Fragment() {
                         Log.e("EditUrnaFragment", "Error API (${response.code()}) subiendo img galería ${imageIndex + 1} (Multipart): $errorBody")
                         uploadErrorCount++
                     }
-                    checkUploadCompletion() // Verificar si terminaron todas
+                    checkUploadCompletion()
                 }
                 override fun onFailure(call: Call<UrnaImage>, t: Throwable) {
                     if (!isAdded) return
                     Log.e("EditUrnaFragment", "Fallo red subiendo img galería ${imageIndex + 1} (Multipart)", t)
                     uploadErrorCount++
-                    checkUploadCompletion() // Verificar si terminaron todas
+                    checkUploadCompletion()
                 }
-            }) //
+            })
 
         } catch (e: Exception) {
-            // Error creando las partes (ej. leer archivo)
             if (!isAdded) return
             Log.e("EditUrnaFragment", "Error preparando img galería ${imageIndex + 1} (Multipart)", e)
             uploadErrorCount++
             if (context != null) Toast.makeText(context, "Error procesando imagen ${imageIndex + 1}", Toast.LENGTH_SHORT).show()
-            checkUploadCompletion() // Verificar si terminaron todas
+            checkUploadCompletion()
         }
     }
 
-    // --- checkUploadCompletion y updateUploadProgressToast ---
     private fun checkUploadCompletion() {
         if (!isAdded || _binding == null) return
         val processedCount = uploadSuccessCount + uploadErrorCount
-        updateUploadProgressToast() // Actualiza contador en Toast
-        if (processedCount == uploadTotalCount) { // Si ya se procesaron todas
-            showLoading(false) // Ocultar loading
+        updateUploadProgressToast()
+        if (processedCount == uploadTotalCount) {
+            showMainLoading(false) // Usar el método implementado
             Log.d("EditUrnaFragment", "Subida múltiple a galería (Multipart) completa. Éxitos: $uploadSuccessCount, Errores: $uploadErrorCount")
             val message = if (uploadErrorCount == 0) "Se añadieron $uploadSuccessCount imágenes a la galería."
             else "Se añadieron $uploadSuccessCount de $uploadTotalCount. Errores: $uploadErrorCount."
             if (context != null) Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-            // Aquí podrías querer refrescar la galería si la muestras en este fragment
-            // o indicar al fragmento de detalle que refresque si se navega de vuelta.
         }
     }
 
@@ -576,24 +493,37 @@ class EditUrnaFragment : Fragment() {
         if (context == null || !isAdded) return
         val processedCount = uploadSuccessCount + uploadErrorCount
         var message = ""
-        // Mostrar progreso solo si hay imágenes para subir y no han terminado todas
         if (uploadTotalCount > 0 && processedCount < uploadTotalCount) {
             message = "Subiendo galería $processedCount de $uploadTotalCount... (E:$uploadErrorCount)"
         } else if (processedCount == 0 && uploadTotalCount > 0) {
             message = "Iniciando subida de $uploadTotalCount imágenes a galería..."
-        } // No mostramos nada si processed == total o total es 0
-
-        progressToast?.cancel() // Cancela el anterior
+        }
+        progressToast?.cancel()
         if (message.isNotEmpty()) {
             progressToast = Toast.makeText(context, message, Toast.LENGTH_SHORT)
             progressToast?.show()
         } else {
-            progressToast = null // Limpia la referencia si ya no se muestra
+            progressToast = null
+        }
+    }
+
+    private fun uploadMultipleImagesToGalleryMultipart(uris: List<Uri>) {
+        val urnaId = currentUrna?.id ?: return
+
+        showMainLoading(true) // Usar el método implementado
+        uploadTotalCount = uris.size
+        uploadSuccessCount = 0
+        uploadErrorCount = 0
+        updateUploadProgressToast()
+
+        uris.forEachIndexed { index, uri ->
+            Log.d("EditUrnaFragment", "Subiendo imagen ${index + 1} a galería (Multipart)...")
+            uploadSingleImageToGalleryMultipart(urnaId, uri, index)
         }
     }
 
 
-    // --- Diálogo y Lógica de Borrado ---
+    // --- Diálogo y Lógica de Borrado (Sin cambios) ---
     private fun showDeleteConfirmationDialog() {
         if (context == null || !isAdded) return
         AlertDialog.Builder(requireContext())
@@ -608,14 +538,14 @@ class EditUrnaFragment : Fragment() {
     private fun deleteUrna() {
         if (context == null || _binding == null || !isAdded) return
         val urnaId = currentUrna?.id ?: return
-        showLoading(true)
+        showMainLoading(true) // Usar el método implementado
         urnaService.deleteUrna(urnaId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (!isAdded || _binding == null) return
-                showLoading(false)
+                showMainLoading(false) // Usar el método implementado
                 if (response.isSuccessful) {
                     Toast.makeText(context, "Urna eliminada", Toast.LENGTH_SHORT).show()
-                    parentFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE) // Limpia pila
+                    parentFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
                 } else {
                     Log.e("EditUrnaFragment", "Error ${response.code()} eliminando: ${response.errorBody()?.string()}")
                     Toast.makeText(context, "Error ${response.code()} al eliminar", Toast.LENGTH_SHORT).show()
@@ -623,72 +553,38 @@ class EditUrnaFragment : Fragment() {
             }
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 if (!isAdded || _binding == null) return
-                showLoading(false)
+                showMainLoading(false) // Usar el método implementado
                 Log.e("EditUrnaFragment", "Fallo red al eliminar", t)
                 Toast.makeText(context, "Fallo red al eliminar", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    // Función principal que itera y sube cada imagen seleccionada
-    private fun uploadMultipleImagesToGalleryMultipart(uris: List<Uri>) {
-        // ... (verificaciones iniciales) ...
-        val urnaId = currentUrna?.id ?: return
-
-        showLoading(true)
-        // ... (inicializar contadores) ...
-        updateUploadProgressToast()
-
-        // Itera y llama a la función de subida individual CORRECTA
-        uris.forEachIndexed { index, uri ->
-            Log.d("EditUrnaFragment", "Subiendo imagen ${index + 1} a galería (Multipart)...")
-            uploadSingleImageToGalleryMultipart(urnaId, uri, index) // Llama a la función de abajo
-        }
-    }
-
-    // Sube UNA imagen usando addUrnaImageMultipart (ESTA ES LA FUNCIÓN CORREGIDA)
-
-
-    // --- Helpers ---
-    // Crea RequestBody de texto plano
+    // --- Helpers (Sin cambios) ---
     private fun createTextPart(text: String): RequestBody {
         return text.toRequestBody("text/plain".toMediaTypeOrNull())
     }
 
-    // Muestra/oculta ProgressBar
-    private fun showLoading(isLoading: Boolean) {
-        _binding?.let {
-            it.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            // Deshabilitar botones interactivos durante carga/subida
-            it.btnSaveChanges.isEnabled = !isLoading
-            it.btnDeleteUrna.isEnabled = !isLoading
-            it.btnSelectImage.isEnabled = !isLoading
-            it.btnAddGalleryImage.isEnabled = !isLoading
-        }
-    }
-
-    // Errores de subida genérica (/upload/image) - Usados por saveUrnaChanges
     private fun handleUploadError(response: Response<*>) {
         if (!isAdded || _binding == null) return
         val errorBody = response.errorBody()?.string() ?: "N/A"
         Log.e("EditUrnaFragment", "Error API subiendo imagen (genérico): ${response.code()}. Body: $errorBody")
         if (context != null) Toast.makeText(requireContext(), "Error ${response.code()} (Subida Img)", Toast.LENGTH_SHORT).show()
-        showLoading(false)
+        showMainLoading(false) // Usar el método implementado
     }
     private fun handleUploadFailure(t: Throwable) {
         if (!isAdded || _binding == null) return
         Log.e("EditUrnaFragment", "Fallo red (Subida Img genérico)", t)
         if (context != null) Toast.makeText(requireContext(), "Fallo red (Subida Img): ${t.message}", Toast.LENGTH_SHORT).show()
-        showLoading(false)
+        showMainLoading(false) // Usar el método implementado
     }
     private fun handleImageProcessingError(e: Exception) {
         if (!isAdded || _binding == null) return
         Log.e("EditUrnaFragment", "Excepción procesando imagen", e)
         if (context != null) Toast.makeText(requireContext(), "Error procesando imagen", Toast.LENGTH_SHORT).show()
-        showLoading(false)
+        showMainLoading(false) // Usar el método implementado
     }
 
-    // Crea MultipartBody.Part para una imagen Uri
     @Throws(IllegalStateException::class, IOException::class)
     private fun createImagePart(context: Context, uri: Uri, fieldName: String): MultipartBody.Part {
         val mimeType = getMimeType(context, uri) ?: "image/jpeg"
@@ -698,11 +594,9 @@ class EditUrnaFragment : Fragment() {
             ?: throw IOException("No se pudo abrir InputStream para Uri: $uri")
         val bytes = inputStream.use { it.readBytes() }
         val requestBody = bytes.toRequestBody(mimeType.toMediaTypeOrNull())
-        // El fieldName aquí ('url', 'image', etc.) debe coincidir con el @Part name O el nombre esperado por la API
         return MultipartBody.Part.createFormData(fieldName, fileName, requestBody)
     }
 
-    // Obtiene el MimeType de una Uri
     private fun getMimeType(context: Context, uri: Uri): String? {
         return context.contentResolver.getType(uri)?.lowercase()
             ?: MimeTypeMap.getSingleton().getMimeTypeFromExtension(
@@ -710,7 +604,6 @@ class EditUrnaFragment : Fragment() {
             )
     }
 
-    // Obtiene el nombre de archivo de una Uri
     private fun getFileName(context: Context, uri: Uri): String {
         var result: String? = null
         if (uri.scheme == "content") {
@@ -736,7 +629,7 @@ class EditUrnaFragment : Fragment() {
     // --- onDestroyView ---
     override fun onDestroyView() {
         super.onDestroyView()
-        progressToast?.cancel() // Cancela toast si sigue mostrándose
-        _binding = null // Limpia binding para evitar fugas de memoria
+        progressToast?.cancel()
+        _binding = null
     }
 }

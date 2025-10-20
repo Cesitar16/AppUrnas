@@ -16,6 +16,7 @@ import com.example.prueba2appurnas.R
 import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.api.UrnaImageService
 import com.example.prueba2appurnas.databinding.FragmentUrnaDetailBinding // Asegúrate que el layout se llame fragment_urna_detail.xml
+import com.example.prueba2appurnas.model.UrlObject
 import com.example.prueba2appurnas.model.Urna
 import com.example.prueba2appurnas.model.UrnaImage
 import com.example.prueba2appurnas.ui.UrnaImageAdapter
@@ -150,29 +151,60 @@ class UrnaDetailFragment : Fragment() {
                 if (_binding == null || !isAdded) return
 
                 if (response.isSuccessful) {
-                    // Filtrar por si acaso la API devuelve imágenes de otras urnas (aunque no debería si se usa Query Param)
-                    val images = response.body()?.filter { it.urna_id == urnaId } ?: emptyList()
-                    Log.d("UrnaDetailFragment", "Imágenes adicionales recibidas: ${images.size}")
+                    // 1. Obtener la lista de la galería (API /urn_image)
+                    val apiImages = response.body()?.filter { it.urna_id == urnaId } ?: emptyList()
 
-                    if (images.isNotEmpty()) {
-                        val adapter = UrnaImageAdapter(images) { imageUrl ->
-                            // Al hacer clic en una miniatura, cárgala en la imagen principal
-                            if (_binding != null && isAdded) { // Doble check por seguridad con Glide
+                    // --- [INICIO DE LA SOLUCIÓN] ---
+
+                    // 2. Crear una lista combinada mutable
+                    val combinedImages = mutableListOf<UrnaImage>()
+
+                    // 3. Obtener la imagen principal (de /urn)
+                    val mainImagePath = currentUrna?.image_url?.path
+
+                    // 4. Si la imagen principal existe, crear un objeto UrnaImage "falso"
+                    if (!mainImagePath.isNullOrBlank()) {
+                        val mainImageAsUrnaImage = UrnaImage(
+                            id = -1, // ID Falso (o 0), solo para diferenciar
+                            urna_id = urnaId,
+                            alt = "Imagen Principal",
+                            is_cover = true,
+                            sort_order = 0,
+                            // Aquí creamos el objeto 'UrlObject' que el adapter espera
+                            url = UrlObject(url = mainImagePath)
+                        )
+                        // 5. Añadir la imagen principal PRIMERO a la lista
+                        combinedImages.add(mainImageAsUrnaImage)
+                    }
+
+                    // 6. Añadir el RESTO de imágenes de la galería
+                    combinedImages.addAll(apiImages)
+
+                    // --- [FIN DE LA SOLUCIÓN] ---
+
+                    Log.d("UrnaDetailFragment", "Imágenes totales (Principal + Galería): ${combinedImages.size}")
+
+                    // 7. Usar la lista combinada (combinedImages) para el adaptador
+                    if (combinedImages.isNotEmpty()) {
+                        val adapter = UrnaImageAdapter(combinedImages) { imageUrl ->
+                            // Al hacer clic en CUALQUIER miniatura, cárgala en la imagen principal
+                            if (_binding != null && isAdded) {
+                                // (La lógica de Glide aquí no necesita cambiar)
                                 val clickedGlideModel = NetUtils.glideModelWithAuth(requireContext(), imageUrl)
                                 Glide.with(requireContext())
                                     .load(clickedGlideModel)
                                     .placeholder(R.drawable.bg_image_border)
                                     .error(R.drawable.bg_image_border)
                                     .centerCrop()
-                                    .transition(DrawableTransitionOptions.withCrossFade(200)) // Transición suave
+                                    .transition(DrawableTransitionOptions.withCrossFade(200))
                                     .into(binding.imageUrna)
                             }
                         }
                         binding.recyclerViewImages.adapter = adapter
-                        binding.recyclerViewImages.visibility = View.VISIBLE // Asegura que sea visible
+                        binding.recyclerViewImages.visibility = View.VISIBLE
                     } else {
-                        Log.w("UrnaDetailFragment", "⚠️ La urna no tiene imágenes adicionales asociadas.")
-                        binding.recyclerViewImages.visibility = View.GONE // Oculta el RecyclerView si no hay imágenes
+                        Log.w("UrnaDetailFragment", "⚠️ La urna no tiene NINGUNA imagen (ni principal ni galería).")
+                        binding.recyclerViewImages.visibility = View.GONE
                     }
                 } else {
                     Log.e("UrnaDetailFragment", "Error al cargar imágenes adicionales: ${response.code()} - ${response.message()}")
@@ -184,8 +216,36 @@ class UrnaDetailFragment : Fragment() {
             override fun onFailure(call: Call<List<UrnaImage>>, t: Throwable) {
                 if (_binding == null || !isAdded) return
                 Log.e("UrnaDetailFragment", "Fallo de red al conectar por imágenes adicionales: ${t.message}", t)
-                Toast.makeText(context, "Fallo de red al cargar galería", Toast.LENGTH_LONG).show()
-                binding.recyclerViewImages.visibility = View.GONE
+                // AÚN SI FALLA LA GALERÍA, INTENTAMOS MOSTRAR AL MENOS LA IMAGEN PRINCIPAL
+                // (Esta lógica es una mejora, ya que la imagen principal ya está en `currentUrna`)
+
+                val mainImagePath = currentUrna?.image_url?.path
+                if (!mainImagePath.isNullOrBlank()) {
+                    val mainImageAsUrnaImage = UrnaImage(
+                        id = -1, urna_id = urnaId, alt = "Imagen Principal",
+                        is_cover = true, sort_order = 0, url = UrlObject(url = mainImagePath)
+                    )
+                    val adapter = UrnaImageAdapter(listOf(mainImageAsUrnaImage)) { imageUrl ->
+                        // ... (misma lógica de clic) ...
+                        if (_binding != null && isAdded) {
+                            val clickedGlideModel = NetUtils.glideModelWithAuth(requireContext(), imageUrl)
+                            Glide.with(requireContext())
+                                .load(clickedGlideModel)
+                                .placeholder(R.drawable.bg_image_border)
+                                .error(R.drawable.bg_image_border)
+                                .centerCrop()
+                                .transition(DrawableTransitionOptions.withCrossFade(200))
+                                .into(binding.imageUrna)
+                        }
+                    }
+                    binding.recyclerViewImages.adapter = adapter
+                    binding.recyclerViewImages.visibility = View.VISIBLE
+                    Toast.makeText(context, "Fallo de red. Mostrando solo imagen principal.", Toast.LENGTH_LONG).show()
+                } else {
+                    // Si falla la red Y no hay imagen principal, ocultamos todo
+                    binding.recyclerViewImages.visibility = View.GONE
+                    Toast.makeText(context, "Fallo de red al cargar galería", Toast.LENGTH_LONG).show()
+                }
             }
         })
     }
