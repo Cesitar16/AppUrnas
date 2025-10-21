@@ -341,10 +341,3 @@ El proyecto incluye archivos básicos para:
 * Ajustar las URLs base en `app/build.gradle.kts` si se clona el backend de Xano.
 * Los modelos (`model/`) deben mantenerse sincronizados con la estructura de respuesta de la API.
 * Considerar añadir tests unitarios para la lógica de negocio y tests instrumentados para los flujos de UI.
-
----
-
-## Licencia
-
-Este proyecto no especifica una licencia. Considera añadir un archivo `LICENSE` si planeas distribuirlo o que otros colaboren.
-```
