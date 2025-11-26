@@ -7,7 +7,6 @@
     android:background="@color/black"
     android:padding="16dp">
 
-    <!-- Título -->
     <TextView
         android:id="@+id/txtCartTitle"
         android:layout_width="wrap_content"
@@ -19,7 +18,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Swipe Refresh -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
         android:layout_width="0dp"
@@ -29,15 +27,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Lista del carrito -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerCart"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingTop="8dp" />
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <!-- Loader -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="40dp"
@@ -48,7 +45,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Card Total de Compra -->
     <LinearLayout
         android:id="@+id/cardTotal"
         android:layout_width="0dp"
@@ -81,6 +77,7 @@
             android:backgroundTint="@color/colorAccentGold"
             android:textStyle="bold"
             app:cornerRadius="10dp" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
