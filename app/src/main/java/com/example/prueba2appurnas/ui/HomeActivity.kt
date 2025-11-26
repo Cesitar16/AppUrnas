@@ -9,6 +9,7 @@ import com.example.prueba2appurnas.databinding.ActivityHomeBinding
 import com.example.prueba2appurnas.ui.fragments.AddUrnaFragment // Nombres actualizados
 import com.example.prueba2appurnas.ui.fragments.UrnasFragment   // Nombres actualizados
 import com.example.prueba2appurnas.ui.fragments.ProfileFragment
+import com.example.prueba2appurnas.ui.fragments.AdminUsersFragment
 
 class HomeActivity : AppCompatActivity() {
 
@@ -25,11 +26,12 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_urnas -> selectedFragment = UrnasFragment()
                 R.id.nav_add_urna -> selectedFragment = AddUrnaFragment()
                 R.id.nav_profile -> selectedFragment = ProfileFragment()
+                R.id.nav_users -> selectedFragment = AdminUsersFragment()
+                R.id.nav_profile -> selectedFragment = ProfileFragment()
             }
             if (selectedFragment != null) {
-                // Al seleccionar un item principal, limpiamos la pila de fragments anteriores (Detalle, Edición)
                 supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                loadFragment(selectedFragment, false) // Carga el fragment principal sin añadirlo a la pila
+                loadFragment(selectedFragment, false)
             }
             true
         }
