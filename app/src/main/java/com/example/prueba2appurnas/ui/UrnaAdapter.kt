@@ -19,13 +19,29 @@ import com.example.prueba2appurnas.ui.fragments.UrnaDetailFragment
 import com.example.prueba2appurnas.util.NetUtils
 
 /**
- * Adaptador para la lista de urnas, con soporte de filtrado y navegación a detalle.
+ * Adaptador para la lista de urnas, con soporte de filtrado y clics.
+ * Compatible con modo ADMIN 🛠️ y CLIENTE 🛒.
  */
-class UrnaAdapter(private val urnasOriginal: List<Urna>) :
-    RecyclerView.Adapter<UrnaAdapter.UrnaViewHolder>(), Filterable {
+class UrnaAdapter(
+    private var urnasOriginal: List<Urna>
+) : RecyclerView.Adapter<UrnaAdapter.UrnaViewHolder>(), Filterable {
 
     // Lista filtrada (inicia igual que la original)
-    private var urnasFiltradas: List<Urna> = urnasOriginal
+    private var urnasFiltradas: List<Urna> = urnasOriginal.toList()
+
+    // Listener para CLIENTE
+    private var itemClickListener: ((Urna) -> Unit)? = null
+
+    fun setOnItemClickListener(listener: (Urna) -> Unit) {
+        this.itemClickListener = listener
+    }
+
+    // Actualiza los datos cuando llegan desde API
+    fun updateList(newList: List<Urna>) {
+        urnasOriginal = newList
+        urnasFiltradas = newList.toList()
+        notifyDataSetChanged()
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UrnaViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -37,19 +53,24 @@ class UrnaAdapter(private val urnasOriginal: List<Urna>) :
         val urna = urnasFiltradas[position]
         holder.bind(urna)
 
+        // 🔥 CLIENTE → clic delegado por callback
+        itemClickListener?.let { listener ->
+            holder.itemView.setOnClickListener { listener(urna) }
+            return
+        }
+
+        // 🔥 ADMIN → abre UrnaDetailFragment
         holder.itemView.setOnClickListener {
             val context = holder.itemView.context
-
             if (context is AppCompatActivity) {
-                val detailFragment = UrnaDetailFragment.newInstance(urna)
-
+                val fragment = UrnaDetailFragment.newInstance(urna)
                 context.supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, detailFragment)
+                    .replace(R.id.fragment_container, fragment)
                     .addToBackStack(UrnaDetailFragment::class.java.simpleName)
                     .commit()
             } else {
-                Log.e("UrnaAdapter", "El contexto no es AppCompatActivity, no se puede navegar a Fragment")
-                Toast.makeText(context, "Error de navegación", Toast.LENGTH_SHORT).show()
+                Log.e("UrnaAdapter", "Contexto inválido")
+                Toast.makeText(context, "Error al abrir detalle", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -57,18 +78,18 @@ class UrnaAdapter(private val urnasOriginal: List<Urna>) :
     override fun getItemCount(): Int = urnasFiltradas.size
 
     /**
-     * Implementación del filtro para búsqueda por nombre o ID.
+     * Filtro → busca por nombre o ID
      */
     override fun getFilter(): Filter = object : Filter() {
         override fun performFiltering(query: CharSequence?): FilterResults {
-            val texto = query.toString().trim().lowercase()
+            val texto = query?.toString()?.trim()?.lowercase() ?: ""
 
             val resultados = if (texto.isEmpty()) {
                 urnasOriginal
             } else {
                 urnasOriginal.filter {
                     it.name?.lowercase()?.contains(texto) == true ||
-                            it.id?.toString()?.contains(texto) == true
+                            it.id.toString().contains(texto)
                 }
             }
 
@@ -82,10 +103,10 @@ class UrnaAdapter(private val urnasOriginal: List<Urna>) :
     }
 
     /**
-     * ViewHolder que representa cada tarjeta de urna.
+     * ViewHolder → representa cada tarjeta de urna
      */
     class UrnaViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val imgUrna: ImageView = itemView.findViewById(R.id.imgUrna)
+        private val img: ImageView = itemView.findViewById(R.id.imgUrna)
         private val txtName: TextView = itemView.findViewById(R.id.txtUrnaName)
         private val txtPrice: TextView = itemView.findViewById(R.id.txtUrnaPrice)
         private val txtStock: TextView = itemView.findViewById(R.id.txtUrnaStock)
@@ -94,27 +115,19 @@ class UrnaAdapter(private val urnasOriginal: List<Urna>) :
             txtName.text = urna.name ?: "Sin nombre"
             txtPrice.text = "$${urna.price ?: 0.0}"
 
-            // Mostrar stock
             val stock = urna.stock ?: 0
             txtStock.text = "Stock: $stock"
-
-            // Cambiar color según cantidad (verde o rojo)
             val colorRes = if (stock <= 5) R.color.stockBajo else R.color.stockNormal
             txtStock.setTextColor(ContextCompat.getColor(itemView.context, colorRes))
 
-            // Obtener URL absoluta de imagen
-            val rawPath = urna.image_url?.path
-            val fullUrl = NetUtils.buildAbsoluteUrl(rawPath)
+            val fullUrl = NetUtils.buildAbsoluteUrl(urna.image_url?.path)
 
-            Log.d("IMG_DEBUG", "Urna: ${urna.name}, path: $rawPath, fullUrl: $fullUrl")
-
-            // Cargar imagen con Glide
             Glide.with(itemView.context)
                 .load(fullUrl)
                 .placeholder(R.drawable.bg_image_border)
                 .error(R.drawable.bg_image_border)
                 .centerCrop()
-                .into(imgUrna)
+                .into(img)
         }
     }
 }

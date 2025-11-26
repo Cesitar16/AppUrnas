@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.example.prueba2appurnas">
 
-    <!-- 🌐 Permiso para conexión a Internet -->
+    <!-- Permisos -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
@@ -20,7 +20,7 @@
         android:networkSecurityConfig="@xml/network_security_config"
         tools:ignore="HardcodedDebugMode">
 
-        <!-- 🟢 Activity principal (Login) -->
+        <!-- 🟢 LOGIN ACTIVITY -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
@@ -31,15 +31,21 @@
             </intent-filter>
         </activity>
 
-        <!-- 🟢 Activity de registro (Crear cuenta) -->
+        <!-- 🟢 REGISTER -->
         <activity
             android:name=".ui.RegisterActivity"
             android:exported="false"
             android:screenOrientation="sensor" />
 
-        <!-- 🟢 Activity principal (Home / Dashboard de urnas) -->
+        <!-- 🟢 HOME ADMIN -->
         <activity
             android:name=".ui.HomeActivity"
+            android:exported="false"
+            android:screenOrientation="sensor" />
+
+        <!-- 🟢 HOME CLIENTE (FALTABA) -->
+        <activity
+            android:name=".ui.client.ClientHomeActivity"
             android:exported="false"
             android:screenOrientation="sensor" />
 

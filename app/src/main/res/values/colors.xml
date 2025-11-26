@@ -32,4 +32,7 @@
     <color name="successGreen">#4CAF50</color>  <!-- Éxito (para futuros toasts o alertas) -->
     <color name="errorRed">#FF5252</color>      <!-- Error -->
     <color name="infoBlue">#2196F3</color>      <!-- Informativo -->
+
+    <color name="card_background_dark">#242424</color>
+
 </resources>

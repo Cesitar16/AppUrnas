@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Catálogo -->
+    <item
+        android:id="@+id/menu_client_catalog"
+        android:title="Catálogo"
+        android:icon="@drawable/ic_inventory" />
+
+    <!-- Carrito -->
+    <item
+        android:id="@+id/menu_client_cart"
+        android:title="Carrito"
+        android:icon="@drawable/ic_cart" />
+
+    <!-- Perfil -->
+    <item
+        android:id="@+id/menu_client_profile"
+        android:title="Perfil"
+        android:icon="@drawable/ic_user" />
+
+</menu>

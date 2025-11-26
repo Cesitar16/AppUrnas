@@ -7,14 +7,20 @@ class TokenManager(private val context: Context) {
 
     companion object {
         private const val PREFS_NAME = "MyAppPrefs"
-        private const val KEY_AUTH_TOKEN = "authToken" // Solo necesitamos la clave del token
+        private const val KEY_AUTH_TOKEN = "authToken"
+        private const val KEY_USER_EMAIL = "userEmail"
+
+        private const val KEY_USER_ID = "userId"
+
+
     }
 
     private val prefs: SharedPreferences =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-    // Ya no necesitamos saveAuthData, getUserName, getUserEmail, getUserRole
-
+    // ===============================
+    // TOKEN
+    // ===============================
     fun saveToken(token: String) {
         prefs.edit().putString(KEY_AUTH_TOKEN, token).apply()
     }
@@ -23,14 +29,33 @@ class TokenManager(private val context: Context) {
         return prefs.getString(KEY_AUTH_TOKEN, null)
     }
 
-    // clearToken ahora solo necesita borrar el token
-    fun clearToken() {
-        prefs.edit().apply{
-            remove(KEY_AUTH_TOKEN)
-            // Ya no necesitamos borrar name, email, role
-            apply()
-        }
+    fun isLoggedIn(): Boolean = getToken() != null
+
+    // ===============================
+    // EMAIL
+    // ===============================
+    fun saveUserEmail(email: String?) {
+        prefs.edit().putString(KEY_USER_EMAIL, email ?: "").apply()
     }
 
-    fun isLoggedIn(): Boolean = getToken() != null
+    fun getUserEmail(): String {
+        return prefs.getString(KEY_USER_EMAIL, "Correo no disponible") ?: "Correo no disponible"
+    }
+
+    // ===============================
+    // LOGOUT / LIMPIAR TODO
+    // ===============================
+    fun clear() {
+        prefs.edit().clear().apply()
+    }
+
+    fun saveUserId(id: Int) {
+        prefs.edit().putInt("USER_ID", id).apply()
+    }
+
+    fun getUserId(): Int {
+        return prefs.getInt("USER_ID", -1)  // -1 si no existe
+    }
+
+
 }
