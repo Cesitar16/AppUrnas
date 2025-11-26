@@ -109,13 +109,17 @@ class ClientUrnaDetailFragment : Fragment() {
                 call: Call<List<UrnaImage>>,
                 response: Response<List<UrnaImage>>
             ) {
+                if (!response.isSuccessful) {
+                    Toast.makeText(requireContext(), "Error cargando imágenes", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+                // 🔥 FILTRAR REALMENTE POR ID DE URNA
                 val images = response.body()
-                    ?.filter { img ->
-                        val u = img.url
-                        u != null && !u.url.isNullOrEmpty()
-                    }
+                    ?.filter { it.urna_id == urnaId }
                     ?: emptyList()
 
+                // Adaptador
                 val adapter = UrnaImageAdapter(images) { imageUrl ->
                     Glide.with(requireContext())
                         .load(imageUrl)
@@ -131,6 +135,7 @@ class ClientUrnaDetailFragment : Fragment() {
             }
         })
     }
+
 
     private fun addToCart() {
         val urna = urnaObject ?: return
