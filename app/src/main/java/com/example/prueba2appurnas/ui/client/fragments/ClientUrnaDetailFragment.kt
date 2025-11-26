@@ -58,6 +58,10 @@ class ClientUrnaDetailFragment : Fragment() {
         binding.btnAddToCartClient.setOnClickListener { addToCart() }
     }
 
+    // ===========================
+    // Cargar datos de la urna
+    // ===========================
+
     private fun loadUrnaData() {
         val api = RetrofitClient.getUrnaService(requireContext())
 
@@ -108,6 +112,10 @@ class ClientUrnaDetailFragment : Fragment() {
         }
     }
 
+    // ===========================
+    // Cargar miniaturas
+    // ===========================
+
     private fun loadImages() {
         val api = RetrofitClient.getUrnaImageService(requireContext())
 
@@ -139,13 +147,16 @@ class ClientUrnaDetailFragment : Fragment() {
         })
     }
 
+    // ===========================
+    // AGREGAR AL CARRITO
+    // ===========================
+
     private fun addToCart() {
         val urna = urnaObject ?: return
 
         val service = RetrofitClient.getCartService(requireContext())
         val localStore = CartLocalStorage(requireContext())
         val repo = CartRepository(service, localStore)
-
         val userId = tokenManager.getUserId()
 
         if (userId == -1) {
@@ -155,26 +166,52 @@ class ClientUrnaDetailFragment : Fragment() {
 
         lifecycleScope.launch {
 
+            // 1) Obtener o crear carrito
             val cartId = repo.getOrCreateCart(userId)
 
             if (cartId == null) {
-                Toast.makeText(requireContext(), "Error creando carrito", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "No se pudo obtener el carrito", Toast.LENGTH_SHORT).show()
                 return@launch
             }
 
-            val response = repo.addItem(
+            // 2) Obtener items existentes
+            val itemsResponse = repo.getItems(cartId)
+
+            if (!itemsResponse.isSuccessful) {
+                Toast.makeText(requireContext(), "Error obteniendo items del carrito", Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+
+            val items = itemsResponse.body() ?: emptyList()
+
+            // 3) Verificar si YA existe ese producto
+            val exists = items.any { it.urn_id == urnaId }
+
+            if (exists) {
+                Toast.makeText(
+                    requireContext(),
+                    "Este producto ya está en tu carrito. Modifica la cantidad desde la página Carrito.",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@launch
+            }
+
+            // 4) Agregar item
+            val result = repo.addItem(
                 cartId = cartId,
                 urnId = urnaId,
                 price = urna.price ?: 0.0
             )
 
-            if (response.isSuccessful) {
+            if (result.isSuccessful) {
                 Toast.makeText(requireContext(), "Agregado al carrito ✔", Toast.LENGTH_SHORT).show()
             } else {
                 Toast.makeText(requireContext(), "Error al agregar", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
+
 
     override fun onDestroyView() {
         _binding = null

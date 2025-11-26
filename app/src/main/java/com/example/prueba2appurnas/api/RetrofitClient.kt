@@ -108,4 +108,9 @@ object RetrofitClient {
             .create(CartService::class.java)
     }
 
+    // USUARIOS (Para editar perfil)
+    fun getUserService(context: Context): UserService =
+        createAuthenticatedClient(ApiConfig.BASE_URL_V1, context)
+            .create(UserService::class.java)
+
 }

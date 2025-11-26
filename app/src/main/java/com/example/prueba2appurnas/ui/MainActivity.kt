@@ -1,12 +1,10 @@
 package com.example.prueba2appurnas.ui
-
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.media3.common.util.Log
 import androidx.media3.common.util.UnstableApi
 import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.api.TokenManager
@@ -28,12 +26,18 @@ class MainActivity : AppCompatActivity() {
 
         tokenManager = TokenManager(this)
 
-        // 🔥 Si ya hay token → verificar rol directo
-        if (tokenManager.isLoggedIn()) {
-            verificarRolYRedirigir()
-            return
-        }
+        // 1. Configurar listeners SIEMPRE (antes de cualquier chequeo)
+        setupListeners()
 
+        // 2. Verificar sesión automática
+        if (tokenManager.isLoggedIn()) {
+            // Deshabilitamos la UI visualmente mientras carga, pero no bloqueamos la lógica
+            setLoadingState(true)
+            verificarRolYRedirigir(isAutoLogin = true)
+        }
+    }
+
+    private fun setupListeners() {
         binding.btnLogin.setOnClickListener {
             val email = binding.inputEmail.text.toString().trim()
             val password = binding.inputPassword.text.toString().trim()
@@ -51,8 +55,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loginUser(email: String, password: String) {
-
-        binding.btnLogin.isEnabled = false
+        setLoadingState(true)
 
         lifecycleScope.launch {
             try {
@@ -62,65 +65,80 @@ class MainActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val auth = response.body()
                     if (auth != null) {
-                        // Guardar token
                         tokenManager.saveToken(auth.authToken)
-
-                        // Después de login → verificar usuario y rol
-                        verificarRolYRedirigir()
+                        // Verificar rol (Login manual)
+                        verificarRolYRedirigir(isAutoLogin = false)
+                    } else {
+                        setLoadingState(false)
                     }
                 } else {
-                    Toast.makeText(this@MainActivity, "Correo o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Credenciales incorrectas", Toast.LENGTH_SHORT).show()
+                    setLoadingState(false)
                 }
-
             } catch (e: Exception) {
                 Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
-            } finally {
-                binding.btnLogin.isEnabled = true
+                setLoadingState(false)
             }
         }
     }
 
-    private fun verificarRolYRedirigir() {
+    // Añadí el parámetro isAutoLogin para manejar mejor los errores
+    private fun verificarRolYRedirigir(isAutoLogin: Boolean) {
         lifecycleScope.launch {
             try {
                 val api = RetrofitClient.getAuthenticatedAuthService(this@MainActivity)
                 val response = api.getUser()
 
                 if (!response.isSuccessful) {
-                    Toast.makeText(this@MainActivity, "No se pudo verificar el usuario", Toast.LENGTH_SHORT).show()
+                    // 🔥 Si falla (ej. Token Expirado 401), limpiamos y dejamos loguear de nuevo
+                    if (isAutoLogin) {
+                        Toast.makeText(this@MainActivity, "Sesión expirada", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@MainActivity, "Error al verificar usuario", Toast.LENGTH_SHORT).show()
+                    }
+                    tokenManager.clear() // Importante: borrar el token malo
+                    setLoadingState(false)
                     return@launch
                 }
 
                 val user = response.body()
                 if (user == null) {
-                    Toast.makeText(this@MainActivity, "Usuario inválido", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MainActivity, "Datos de usuario vacíos", Toast.LENGTH_SHORT).show()
+                    setLoadingState(false)
                     return@launch
                 }
 
-                // GUARDAR DATOS IMPORTANTES
                 tokenManager.saveUserId(user.id)
                 tokenManager.saveUserEmail(user.email)
 
-                // Revisar rol
                 val rol = user.rol.lowercase()
-
-
-                when (rol) {
-                    "admin" ->
-                        startActivity(Intent(this@MainActivity, HomeActivity::class.java))
-
-                    "client", "cliente", "user" ->
-                        startActivity(Intent(this@MainActivity, ClientHomeActivity::class.java))
-
-                    else ->
-                        Toast.makeText(this@MainActivity, "Rol desconocido: $rol", Toast.LENGTH_SHORT).show()
+                val intent = when (rol) {
+                    "admin" -> Intent(this@MainActivity, HomeActivity::class.java)
+                    "client", "cliente", "user" -> Intent(this@MainActivity, ClientHomeActivity::class.java)
+                    else -> null
                 }
 
-                finish()
+                if (intent != null) {
+                    startActivity(intent)
+                    finish()
+                } else {
+                    Toast.makeText(this@MainActivity, "Rol no permitido: $rol", Toast.LENGTH_SHORT).show()
+                    tokenManager.clear()
+                    setLoadingState(false)
+                }
 
             } catch (e: Exception) {
-                Toast.makeText(this@MainActivity, "Error de conexión: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@MainActivity, "Error de conexión", Toast.LENGTH_SHORT).show()
+                // Si hay error de red en auto-login, permitimos intentar manual
+                setLoadingState(false)
             }
         }
+    }
+
+    private fun setLoadingState(isLoading: Boolean) {
+        binding.btnLogin.isEnabled = !isLoading
+        binding.inputEmail.isEnabled = !isLoading
+        binding.inputPassword.isEnabled = !isLoading
+        binding.btnLogin.text = if (isLoading) "Cargando..." else "Iniciar Sesión"
     }
 }
