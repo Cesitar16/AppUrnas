@@ -90,4 +90,11 @@
     <string name="titulo_crear_urna">Agregar nueva urna</string>
     <string name="titulo_home">Inicio</string>
     <string name="titulo_ajustes">Ajustes</string>
+
+    <!-- 🛒 STRINGS FALTANTES PARA item_cart.xml -->
+    <string name="cart_item_image">Imagen del producto</string>
+    <string name="delete_item">Eliminar producto</string>
+    <string name="decrease_qty">Disminuir cantidad</string>
+    <string name="increase_qty">Aumentar cantidad</string>
+
 </resources>

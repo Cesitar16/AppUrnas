@@ -45,8 +45,7 @@ interface CartService {
     ): Response<CartItem>
 
     @DELETE("cart_item/{id}")
-    suspend fun deleteCartItem(
-        @Path("id") itemId: Int
-    ): Response<Unit>
+    suspend fun deleteCartItem(@Path("id") id: Int): Response<Unit>
+
 }
 

@@ -2,45 +2,106 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp">
+    android:padding="12dp"
+    android:background="#1E1E1E">
 
+    <!-- Imagen -->
     <ImageView
-        android:id="@+id/imgCartItem"
+        android:id="@+id/imgItem"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:scaleType="centerCrop"
+        android:contentDescription="@string/cart_item_image"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
+    <!-- Botón eliminar -->
+    <ImageButton
+        android:id="@+id/btnDelete"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_delete"
+        app:tint="#D6B88A"
+        android:contentDescription="@string/delete_item"
+
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/txtName"
+        android:layout_marginEnd="8dp"/>
+
+
+
+    <!-- Nombre -->
     <TextView
-        android:id="@+id/txtCartItemName"
+        android:id="@+id/txtName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Nombre de urna"
+        android:textColor="#FFFFFF"
+        android:textSize="17sp"
         android:textStyle="bold"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintStart_toEndOf="@id/imgItem"
+        app:layout_constraintEnd_toStartOf="@id/btnDelete"
+        app:layout_constraintTop_toTopOf="@id/imgItem"
+        tools:text="Nombre de urna" />
+
+    <!-- Cantidad + botones -->
+    <LinearLayout
+        android:id="@+id/qtyContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toEndOf="@id/imgItem"
+        app:layout_constraintTop_toBottomOf="@id/txtName">
+
+        <ImageButton
+            android:id="@+id/btnDecrease"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/decrease_qty"
+            app:srcCompat="@android:drawable/ic_media_previous"
+            app:tint="#F2C572" />
+
+        <TextView
+            android:id="@+id/txtQty"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp"
+            android:gravity="center"
+            tools:text="1" />
+
+        <ImageButton
+            android:id="@+id/btnIncrease"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/increase_qty"
+            app:srcCompat="@android:drawable/ic_media_next"
+            app:tint="#F2C572" />
+
+    </LinearLayout>
+
+    <!-- Subtotal -->
+    <TextView
+        android:id="@+id/txtSubtotal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#F2C572"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@id/imgCartItem"
-        app:layout_constraintTop_toTopOf="@id/imgCartItem"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <TextView
-        android:id="@+id/txtCartItemQuantity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cantidad: 1"
-        app:layout_constraintStart_toStartOf="@id/txtCartItemName"
-        app:layout_constraintTop_toBottomOf="@id/txtCartItemName" />
-
-    <TextView
-        android:id="@+id/txtCartItemPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="$120.000"
-        android:textColor="@color/black"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="@id/txtCartItemName"
-        app:layout_constraintTop_toBottomOf="@id/txtCartItemQuantity" />
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/imgItem"
+        tools:text="$150.00" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
