@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="#111111">
+    android:background="#111111"
+    android:fillViewport="true">
 
     <LinearLayout
         android:orientation="vertical"
@@ -12,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- IMAGEN PRINCIPAL -->
+        <!-- Imagen principal -->
         <ImageView
             android:id="@+id/imgUrnaMainClient"
             android:layout_width="match_parent"
@@ -21,76 +20,149 @@
             android:background="#222"
             android:layout_marginBottom="12dp"/>
 
-        <!-- MINIATURAS (RecyclerView Horizontal) -->
+        <!-- Miniaturas -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerUrnaImagesClient"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
-            android:orientation="horizontal"
+            android:layout_height="90dp"
             android:clipToPadding="false"
             android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            />
+            android:paddingEnd="4dp" />
 
-        <!-- NOMBRE -->
+        <!-- Nombre -->
         <TextView
             android:id="@+id/txtUrnaNameClient"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Nombre de la Urna"
+            android:text="Nombre"
+            android:textColor="#FFFFFF"
             android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:layout_marginTop="20dp" />
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-        <!-- PRECIO -->
+        <!-- Precio -->
         <TextView
             android:id="@+id/txtUrnaPriceClient"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="$0.000"
-            android:textSize="18sp"
             android:textColor="#FFD37B"
             android:textStyle="bold"
-            android:layout_marginTop="6dp" />
+            android:textSize="18sp"
+            android:layout_marginTop="6dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
-        <!-- MATERIAL -->
-        <TextView
-            android:id="@+id/txtUrnaMaterialClient"
+        <!-- Datos Técnicos -->
+        <TextView android:text="Detalles Técnicos"
+            android:textColor="#FFD37B"
+            android:textStyle="bold"
+            android:layout_marginTop="18dp"
+            android:textSize="16sp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView android:id="@+id/txtUrnaMaterialClient"
             android:text="Material: -"
             android:textColor="#CCCCCC"
-            android:layout_marginTop="10dp" />
-
-        <!-- COLOR -->
-        <TextView
-            android:id="@+id/txtUrnaColorClient"
+            android:layout_marginTop="6dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView android:id="@+id/txtUrnaColorClient"
             android:text="Color: -"
             android:textColor="#CCCCCC"
-            android:layout_marginTop="6dp" />
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-        <!-- CAPACIDAD -->
-        <TextView
-            android:id="@+id/txtUrnaCapacityClient"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Capacidad: -"
+        <TextView android:id="@+id/txtUrnaCapacityClient"
+            android:text="Modelo: -"
             android:textColor="#CCCCCC"
-            android:layout_marginTop="6dp" />
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-        <!-- DESCRIPCIÓN -->
+        <!-- Medidas -->
+        <TextView android:text="Medidas"
+            android:textColor="#FFD37B"
+            android:textStyle="bold"
+            android:layout_marginTop="18dp"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView android:id="@+id/txtUrnaWidthClient"
+            android:text="Ancho: -"
+            android:textColor="#CCCCCC"
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView android:id="@+id/txtUrnaHeightClient"
+            android:text="Alto: -"
+            android:textColor="#CCCCCC"
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView android:id="@+id/txtUrnaDepthClient"
+            android:text="Profundidad: -"
+            android:textColor="#CCCCCC"
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView android:id="@+id/txtUrnaWeightClient"
+            android:text="Peso: -"
+            android:textColor="#CCCCCC"
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Stock -->
+        <TextView android:text="Inventario"
+            android:textColor="#FFD37B"
+            android:textStyle="bold"
+            android:layout_marginTop="18dp"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView android:id="@+id/txtUrnaStockClient"
+            android:text="Stock: -"
+            android:textColor="#CCCCCC"
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/txtUrnaAvailableClient"
+            android:text="Disponible: -"
+            android:textColor="#CCCCCC"
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <!-- Descripción larga -->
+        <TextView
+            android:id="@+id/txtUrnaDescriptionTitleClient"
+            android:text="Descripción"
+            android:textStyle="bold"
+            android:textColor="#FFD37B"
+            android:layout_marginTop="18dp"
+            android:textSize="16sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+
         <TextView
             android:id="@+id/txtUrnaDescriptionClient"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Descripción..."
             android:textColor="#FFFFFF"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="6dp"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-        <!-- BOTÓN -->
         <Button
             android:id="@+id/btnAddToCartClient"
             android:layout_width="match_parent"
@@ -101,7 +173,6 @@
             android:backgroundTint="#FFD37B"
             android:layout_marginTop="24dp"
             android:layout_marginBottom="32dp"/>
-
     </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

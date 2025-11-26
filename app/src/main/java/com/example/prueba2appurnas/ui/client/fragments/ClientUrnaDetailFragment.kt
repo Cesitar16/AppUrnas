@@ -47,16 +47,13 @@ class ClientUrnaDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupMiniaturesRecycler()
+        binding.recyclerUrnaImagesClient.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+
         loadUrnaData()
         loadImages()
 
         binding.btnAddToCartClient.setOnClickListener { addToCart() }
-    }
-
-    private fun setupMiniaturesRecycler() {
-        binding.recyclerUrnaImagesClient.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
     private fun loadUrnaData() {
@@ -80,22 +77,32 @@ class ClientUrnaDetailFragment : Fragment() {
 
     private fun bindData(urna: Urna) {
 
-        binding.txtUrnaNameClient.text = urna.name ?: "-"
+        binding.txtUrnaNameClient.text = urna.name
         binding.txtUrnaPriceClient.text = "$${urna.price ?: 0.0}"
 
         binding.txtUrnaMaterialClient.text = "Material: ${urna.material_id ?: "-"}"
         binding.txtUrnaColorClient.text = "Color: ${urna.color_id ?: "-"}"
         binding.txtUrnaCapacityClient.text = "Modelo: ${urna.model_id ?: "-"}"
 
+        binding.txtUrnaWidthClient.text = "Ancho: ${urna.width ?: 0} cm"
+        binding.txtUrnaHeightClient.text = "Alto: ${urna.height ?: 0} cm"
+        binding.txtUrnaDepthClient.text = "Profundidad: ${urna.depth ?: 0} cm"
+        binding.txtUrnaWeightClient.text = "Peso: ${urna.weight ?: 0.0} kg"
+        binding.txtUrnaStockClient.text = "Stock: ${urna.stock ?: 0}"
+        binding.txtUrnaAvailableClient.text =
+            if (urna.available == true) "Disponible" else "No disponible"
+
         binding.txtUrnaDescriptionClient.text =
-            urna.short_description ?: urna.detailed_description ?: "-"
+            urna.detailed_description ?: urna.short_description ?: "-"
 
-        // Cargar imagen principal
-        val mainUrl = urna.image_url?.url
+        // Imagen principal
+        val imgUrl = urna.image_url?.url ?: urna.image_url?.path?.let {
+            NetUtils.buildAbsoluteUrl(it)
+        }
 
-        if (!mainUrl.isNullOrEmpty()) {
+        if (!imgUrl.isNullOrEmpty()) {
             Glide.with(requireContext())
-                .load(mainUrl)
+                .load(imgUrl)
                 .centerCrop()
                 .into(binding.imgUrnaMainClient)
         }
@@ -110,19 +117,15 @@ class ClientUrnaDetailFragment : Fragment() {
                 response: Response<List<UrnaImage>>
             ) {
                 if (!response.isSuccessful) {
-                    Toast.makeText(requireContext(), "Error cargando imágenes", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Error cargando miniaturas", Toast.LENGTH_SHORT).show()
                     return
                 }
 
-                // 🔥 FILTRAR REALMENTE POR ID DE URNA
-                val images = response.body()
-                    ?.filter { it.urna_id == urnaId }
-                    ?: emptyList()
+                val images = response.body()?.filter { it.urna_id == urnaId } ?: emptyList()
 
-                // Adaptador
-                val adapter = UrnaImageAdapter(images) { imageUrl ->
+                val adapter = UrnaImageAdapter(images) { url ->
                     Glide.with(requireContext())
-                        .load(imageUrl)
+                        .load(url)
                         .centerCrop()
                         .into(binding.imgUrnaMainClient)
                 }
@@ -136,13 +139,12 @@ class ClientUrnaDetailFragment : Fragment() {
         })
     }
 
-
     private fun addToCart() {
         val urna = urnaObject ?: return
         val cartService = RetrofitClient.getCartService(requireContext())
 
         val request = AddToCartRequest(
-            cart_id = 1, // Temporal hasta asignar usuario real
+            cart_id = 1,
             urn_id = urnaId,
             quantity = 1,
             unit_price = urna.price ?: 0.0
@@ -150,11 +152,11 @@ class ClientUrnaDetailFragment : Fragment() {
 
         cartService.addItem(request).enqueue(object : Callback<CartItem> {
             override fun onResponse(call: Call<CartItem>, response: Response<CartItem>) {
-                if (response.isSuccessful) {
-                    Toast.makeText(requireContext(), "Agregado al carrito ✔", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(requireContext(), "Error al agregar", Toast.LENGTH_SHORT).show()
-                }
+                Toast.makeText(
+                    requireContext(),
+                    if (response.isSuccessful) "Agregado al carrito ✔" else "Error al agregar",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             override fun onFailure(call: Call<CartItem>, t: Throwable) {
