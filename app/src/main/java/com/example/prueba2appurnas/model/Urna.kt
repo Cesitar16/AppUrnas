@@ -31,5 +31,6 @@ data class ImageUrl(
     val type: String?,
     val size: Int?,
     val mime: String?,
-    val meta: Map<String, Any>?
+    val meta: Map<String, Any>?,
+    val url: String?
 ) : Serializable

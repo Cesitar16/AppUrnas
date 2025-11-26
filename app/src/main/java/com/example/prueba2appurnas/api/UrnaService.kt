@@ -72,9 +72,9 @@ interface UrnaService {
     fun uploadUrnaImage(@Part image: MultipartBody.Part): Call<Urna> // Revisar el tipo de retorno esperado
     */
 
-    @GET("urnas/{id}")
+    @GET("urn/{urn_id}")
     fun getUrnaById(
-        @Path("id") id: Int
+        @Path("urn_id") id: Int
     ): Call<Urna>
 
 

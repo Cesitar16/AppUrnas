@@ -6,7 +6,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.prueba2appurnas.databinding.ItemCartBinding
 import com.example.prueba2appurnas.model.CartItem
-import com.example.prueba2appurnas.util.NetUtils
 
 class CartAdapter : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
 
@@ -38,16 +37,15 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
 
         fun bind(item: CartItem) {
 
-            // Nombre desde "_urn"
-            binding.txtCartItemName.text = item._urn?.name ?: "Sin nombre"
+            val urna = item._urn
 
+            binding.txtCartItemName.text = urna?.name ?: "Urna"
             binding.txtCartItemQuantity.text = "x${item.quantity}"
             binding.txtCartItemPrice.text = "$${item.unit_price}"
 
-            // Imagen
-            val url = NetUtils.buildAbsoluteUrl(item._urn?.image_url?.path)
+            val url = urna?.image_url?.url ?: ""
 
-            Glide.with(binding.imgCartItem.context)
+            Glide.with(binding.root.context)
                 .load(url)
                 .into(binding.imgCartItem)
         }

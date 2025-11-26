@@ -3,50 +3,47 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     android:fillViewport="true"
     android:background="#111111">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- Imagen principal -->
+        <!-- IMAGEN PRINCIPAL -->
         <ImageView
             android:id="@+id/imgUrnaMainClient"
-            android:layout_width="0dp"
-            android:layout_height="220dp"
+            android:layout_width="match_parent"
+            android:layout_height="260dp"
             android:scaleType="centerCrop"
             android:background="#222"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_marginBottom="12dp"/>
 
-        <!-- ViewPager galería secundaria -->
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/viewPagerUrnaImagesClient"
-            android:layout_width="0dp"
-            android:layout_height="140dp"
-            android:layout_marginTop="12dp"
-            app:layout_constraintTop_toBottomOf="@id/imgUrnaMainClient"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+        <!-- MINIATURAS (RecyclerView Horizontal) -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerUrnaImagesClient"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:orientation="horizontal"
+            android:clipToPadding="false"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            />
 
-        <!-- Nombre -->
+        <!-- NOMBRE -->
         <TextView
             android:id="@+id/txtUrnaNameClient"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Nombre de la Urna"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="#FFFFFF"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toBottomOf="@id/viewPagerUrnaImagesClient"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_marginTop="20dp" />
 
-        <!-- Precio -->
+        <!-- PRECIO -->
         <TextView
             android:id="@+id/txtUrnaPriceClient"
             android:layout_width="wrap_content"
@@ -55,71 +52,56 @@
             android:textSize="18sp"
             android:textColor="#FFD37B"
             android:textStyle="bold"
-            android:layout_marginTop="6dp"
-            app:layout_constraintTop_toBottomOf="@id/txtUrnaNameClient"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_marginTop="6dp" />
 
-        <!-- Material -->
+        <!-- MATERIAL -->
         <TextView
             android:id="@+id/txtUrnaMaterialClient"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Material: -"
             android:textColor="#CCCCCC"
-            android:layout_marginTop="12dp"
-            app:layout_constraintTop_toBottomOf="@id/txtUrnaPriceClient"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_marginTop="10dp" />
 
-        <!-- Color -->
+        <!-- COLOR -->
         <TextView
             android:id="@+id/txtUrnaColorClient"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Color: -"
             android:textColor="#CCCCCC"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@id/txtUrnaMaterialClient"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_marginTop="6dp" />
 
-        <!-- Capacidad -->
+        <!-- CAPACIDAD -->
         <TextView
             android:id="@+id/txtUrnaCapacityClient"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Capacidad: -"
             android:textColor="#CCCCCC"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@id/txtUrnaColorClient"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:layout_marginTop="6dp" />
 
-        <!-- Descripción -->
+        <!-- DESCRIPCIÓN -->
         <TextView
             android:id="@+id/txtUrnaDescriptionClient"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Descripción de la urna..."
+            android:text="Descripción..."
             android:textColor="#FFFFFF"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="24dp"
-            app:layout_constraintTop_toBottomOf="@id/txtUrnaCapacityClient"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            android:layout_marginTop="16dp"/>
 
-        <!-- Botón agregar al carrito -->
+        <!-- BOTÓN -->
         <Button
             android:id="@+id/btnAddToCartClient"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Agregar al carrito"
+            android:text="AGREGAR AL CARRITO"
             android:textStyle="bold"
-            android:textColor="#000000"
+            android:textColor="#000"
             android:backgroundTint="#FFD37B"
-            android:layout_marginTop="12dp"
-            app:layout_constraintTop_toBottomOf="@id/txtUrnaDescriptionClient"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="32dp"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>

@@ -5,8 +5,10 @@ data class CartItem(
     val created_at: String?,
     val quantity: Int,
     val unit_price: Double,
-    val updated_at: String?,
+    val updated_at: Long?,
     val cart_id: Int,
     val urn_id: Int,
-    val _urn: Urna?       // ← ADDON DE URNA
+
+    // EL CAMPO DEL ADDON DE XANO
+    val _urn: Urna?        // <-- aquí llega la urna COMPLETA del addon
 )

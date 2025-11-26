@@ -14,3 +14,4 @@ data class UrnaImage(
 data class UrlObject(
     val url: String
 )
+

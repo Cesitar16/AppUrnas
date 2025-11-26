@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.api.TokenManager
@@ -27,10 +28,7 @@ class ClientUrnaDetailFragment : Fragment() {
 
     private var urnaId: Int = 0
     private lateinit var tokenManager: TokenManager
-
-    // 🔥 Variables necesarias
-    private var currentUrna: Urna? = null
-    private var cartId: Int = 1 // si tu API asigna automáticamente, reemplaza luego
+    private var urnaObject: Urna? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,12 +47,16 @@ class ClientUrnaDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupMiniaturesRecycler()
         loadUrnaData()
         loadImages()
 
-        binding.btnAddToCartClient.setOnClickListener {
-            addToCart()
-        }
+        binding.btnAddToCartClient.setOnClickListener { addToCart() }
+    }
+
+    private fun setupMiniaturesRecycler() {
+        binding.recyclerUrnaImagesClient.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
     private fun loadUrnaData() {
@@ -63,7 +65,8 @@ class ClientUrnaDetailFragment : Fragment() {
         api.getUrnaById(urnaId).enqueue(object : Callback<Urna> {
             override fun onResponse(call: Call<Urna>, response: Response<Urna>) {
                 if (response.isSuccessful) {
-                    response.body()?.let { bindData(it) }
+                    urnaObject = response.body()
+                    urnaObject?.let { bindData(it) }
                 } else {
                     Toast.makeText(requireContext(), "Error cargando urna", Toast.LENGTH_SHORT).show()
                 }
@@ -76,22 +79,26 @@ class ClientUrnaDetailFragment : Fragment() {
     }
 
     private fun bindData(urna: Urna) {
-        currentUrna = urna
 
-        binding.txtUrnaNameClient.text = urna.name ?: "Sin nombre"
-        binding.txtUrnaPriceClient.text = "$${urna.price ?: 0}"
+        binding.txtUrnaNameClient.text = urna.name ?: "-"
+        binding.txtUrnaPriceClient.text = "$${urna.price ?: 0.0}"
 
-        binding.txtUrnaMaterialClient.text = "N/A"
-        binding.txtUrnaColorClient.text = "N/A"
-        binding.txtUrnaCapacityClient.text = "N/A"
+        binding.txtUrnaMaterialClient.text = "Material: ${urna.material_id ?: "-"}"
+        binding.txtUrnaColorClient.text = "Color: ${urna.color_id ?: "-"}"
+        binding.txtUrnaCapacityClient.text = "Modelo: ${urna.model_id ?: "-"}"
 
-        binding.txtUrnaDescriptionClient.text = urna.image_url?.path ?: "Sin descripción"
+        binding.txtUrnaDescriptionClient.text =
+            urna.short_description ?: urna.detailed_description ?: "-"
 
-        val fullUrl = NetUtils.buildAbsoluteUrl(urna.image_url?.path)
+        // Cargar imagen principal
+        val mainUrl = urna.image_url?.url
 
-        Glide.with(requireContext())
-            .load(fullUrl)
-            .into(binding.imgUrnaMainClient)
+        if (!mainUrl.isNullOrEmpty()) {
+            Glide.with(requireContext())
+                .load(mainUrl)
+                .centerCrop()
+                .into(binding.imgUrnaMainClient)
+        }
     }
 
     private fun loadImages() {
@@ -102,9 +109,21 @@ class ClientUrnaDetailFragment : Fragment() {
                 call: Call<List<UrnaImage>>,
                 response: Response<List<UrnaImage>>
             ) {
-                val lista = response.body() ?: emptyList()
-                binding.viewPagerUrnaImagesClient.adapter =
-                    UrnaImageAdapter(lista) {}
+                val images = response.body()
+                    ?.filter { img ->
+                        val u = img.url
+                        u != null && !u.url.isNullOrEmpty()
+                    }
+                    ?: emptyList()
+
+                val adapter = UrnaImageAdapter(images) { imageUrl ->
+                    Glide.with(requireContext())
+                        .load(imageUrl)
+                        .centerCrop()
+                        .into(binding.imgUrnaMainClient)
+                }
+
+                binding.recyclerUrnaImagesClient.adapter = adapter
             }
 
             override fun onFailure(call: Call<List<UrnaImage>>, t: Throwable) {
@@ -114,13 +133,12 @@ class ClientUrnaDetailFragment : Fragment() {
     }
 
     private fun addToCart() {
-        val urna = currentUrna ?: return
-
+        val urna = urnaObject ?: return
         val cartService = RetrofitClient.getCartService(requireContext())
 
         val request = AddToCartRequest(
-            cart_id = cartId,
-            urn_id = urna.id ?: return,
+            cart_id = 1, // Temporal hasta asignar usuario real
+            urn_id = urnaId,
             quantity = 1,
             unit_price = urna.price ?: 0.0
         )
