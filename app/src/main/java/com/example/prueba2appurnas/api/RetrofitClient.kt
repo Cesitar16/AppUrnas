@@ -64,12 +64,11 @@ object RetrofitClient {
         createUnauthenticatedClient(ApiConfig.BASE_URL_AUTH)
             .create(AuthService::class.java)
 
-    // 🔥 USUARIO AUTENTICADO → /auth/me
     fun getAuthenticatedAuthService(context: Context): AuthService =
         createAuthenticatedClient(ApiConfig.BASE_URL_AUTH, context)
             .create(AuthService::class.java)
 
-    // Alias para compatibilidad con tu código anterior
+    // Alias compatibilidad
     fun getAuthenticatedUserService(context: Context): AuthService =
         getAuthenticatedAuthService(context)
 
@@ -103,14 +102,18 @@ object RetrofitClient {
         createAuthenticatedClient(ApiConfig.BASE_URL_V1, context)
             .create(UploadService::class.java)
 
-    fun getCartService(context: Context): CartService {
-        return createAuthenticatedClient(ApiConfig.BASE_URL_V1, context)
+    // CARRITO
+    fun getCartService(context: Context): CartService =
+        createAuthenticatedClient(ApiConfig.BASE_URL_V1, context)
             .create(CartService::class.java)
-    }
 
-    // USUARIOS (Para editar perfil)
+    // USUARIOS
     fun getUserService(context: Context): UserService =
         createAuthenticatedClient(ApiConfig.BASE_URL_V1, context)
             .create(UserService::class.java)
 
+    // ORDENES / PAGOS
+    fun getOrderService(context: Context): OrderService =
+        createAuthenticatedClient(ApiConfig.BASE_URL_V1, context)
+            .create(OrderService::class.java)
 }

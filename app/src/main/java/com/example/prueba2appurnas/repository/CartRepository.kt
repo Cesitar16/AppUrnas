@@ -1,24 +1,26 @@
 package com.example.prueba2appurnas.repository
 
 import com.example.prueba2appurnas.api.CartService
+import com.example.prueba2appurnas.api.OrderService
 import com.example.prueba2appurnas.model.AddToCartRequest
 import com.example.prueba2appurnas.model.CreateCartRequest
+import com.example.prueba2appurnas.model.OrderItemRequest
+import com.example.prueba2appurnas.model.OrderRequest
 
 class CartRepository(
     private val service: CartService,
+    private val orderService: OrderService,
     private val localStore: CartLocalStorage
 ) {
 
-    // Obtener o crear carrito del usuario
+    // Obtener o crear carrito
     suspend fun getOrCreateCart(userId: Int): Int? {
 
-        // 1. Revisar si ya tengo el cart guardado en memoria local
         val savedId = localStore.getCartId()
         if (savedId != null) {
             return savedId
         }
 
-        // 2. Crear carrito nuevo en Xano
         val response = service.createCart(
             CreateCartRequest(
                 status = "OPEN",
@@ -31,7 +33,6 @@ class CartRepository(
 
         val cartId = response.body()?.id ?: return null
 
-        // Guardar el nuevo carrito
         localStore.saveCartId(cartId)
 
         return cartId
@@ -49,7 +50,15 @@ class CartRepository(
             )
         )
 
-    // Obtener items del carrito
+    // Obtener items
     suspend fun getItems(cartId: Int) =
         service.getCartItemsForCart(cartId)
+
+    // Crear orden
+    suspend fun createOrder(request: OrderRequest) =
+        orderService.createOrder(request)
+
+    // Crear items de orden
+    suspend fun createOrderItem(request: OrderItemRequest) =
+        orderService.createOrderItem(request)
 }

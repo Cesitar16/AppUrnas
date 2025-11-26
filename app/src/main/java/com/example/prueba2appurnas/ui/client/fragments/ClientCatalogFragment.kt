@@ -10,6 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.databinding.FragmentClientCatalogBinding
 import com.example.prueba2appurnas.model.Urna
+import com.example.prueba2appurnas.repository.CartLocalStorage
+import com.example.prueba2appurnas.repository.CartRepository
 import com.example.prueba2appurnas.ui.UrnaAdapter
 import retrofit2.Call
 import retrofit2.Callback
@@ -21,6 +23,7 @@ class ClientCatalogFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var adapter: UrnaAdapter
+    private lateinit var repo: CartRepository
     private var urnasList: List<Urna> = emptyList()
 
     override fun onCreateView(
@@ -34,27 +37,35 @@ class ClientCatalogFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Repositorios
+        repo = CartRepository(
+            service = RetrofitClient.getCartService(requireContext()),
+            orderService = RetrofitClient.getOrderService(requireContext()),
+            localStore = CartLocalStorage(requireContext())
+        )
+
+        // Setup UI
         setupRecyclerView()
-        loadUrnas()
         setupSearch()
+        loadUrnas()
     }
+
 
     // -------------------------------------------
     // CONFIGURAR LISTA
     // -------------------------------------------
     private fun setupRecyclerView() {
-        adapter = UrnaAdapter(emptyList())  // Tu constructor actual SOLO recibe lista
+        adapter = UrnaAdapter(emptyList())
         binding.rvUrnasClient.layoutManager = LinearLayoutManager(requireContext())
         binding.rvUrnasClient.adapter = adapter
 
-        // CLICK → Abrir detalle
         adapter.setOnItemClickListener { urna ->
             openDetail(urna)
         }
     }
 
     // -------------------------------------------
-    // OBTENER URNAS DEL API
+    // OBTENER URNAS DESDE API
     // -------------------------------------------
     private fun loadUrnas() {
         val service = RetrofitClient.getUrnaService(requireContext())
@@ -68,7 +79,7 @@ class ClientCatalogFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<List<Urna>>, t: Throwable) {
-                // Puedes agregar un Toast si quieres
+                // Puedes agregar Toast si deseas
             }
         })
     }

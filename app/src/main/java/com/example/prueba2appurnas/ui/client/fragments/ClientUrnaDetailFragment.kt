@@ -113,7 +113,7 @@ class ClientUrnaDetailFragment : Fragment() {
     }
 
     // ===========================
-    // Cargar miniaturas
+    // Miniaturas
     // ===========================
 
     private fun loadImages() {
@@ -125,7 +125,8 @@ class ClientUrnaDetailFragment : Fragment() {
                 response: Response<List<UrnaImage>>
             ) {
                 if (!response.isSuccessful) {
-                    Toast.makeText(requireContext(), "Error cargando miniaturas", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Error cargando miniaturas", Toast.LENGTH_SHORT)
+                        .show()
                     return
                 }
 
@@ -154,9 +155,16 @@ class ClientUrnaDetailFragment : Fragment() {
     private fun addToCart() {
         val urna = urnaObject ?: return
 
-        val service = RetrofitClient.getCartService(requireContext())
+        val cartService = RetrofitClient.getCartService(requireContext())
+        val orderService = RetrofitClient.getOrderService(requireContext())
         val localStore = CartLocalStorage(requireContext())
-        val repo = CartRepository(service, localStore)
+
+        val repo = CartRepository(
+            service = cartService,
+            orderService = orderService,
+            localStore = localStore
+        )
+
         val userId = tokenManager.getUserId()
 
         if (userId == -1) {
@@ -184,7 +192,7 @@ class ClientUrnaDetailFragment : Fragment() {
 
             val items = itemsResponse.body() ?: emptyList()
 
-            // 3) Verificar si YA existe ese producto
+            // 3) Verificar existencia
             val exists = items.any { it.urn_id == urnaId }
 
             if (exists) {
@@ -210,8 +218,6 @@ class ClientUrnaDetailFragment : Fragment() {
             }
         }
     }
-
-
 
     override fun onDestroyView() {
         _binding = null

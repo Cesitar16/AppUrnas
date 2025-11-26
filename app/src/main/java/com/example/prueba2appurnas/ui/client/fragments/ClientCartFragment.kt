@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.databinding.FragmentClientCartBinding
 import com.example.prueba2appurnas.model.CartItem
+import com.example.prueba2appurnas.model.OrderItemRequest
+import com.example.prueba2appurnas.model.OrderRequest
 import com.example.prueba2appurnas.model.UpdateCartItemRequest
 import com.example.prueba2appurnas.repository.CartLocalStorage
 import com.example.prueba2appurnas.repository.CartRepository
@@ -23,6 +25,8 @@ class ClientCartFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var cartAdapter: CartAdapter
+    private lateinit var repo: CartRepository
+
     private var lastItems: List<CartItem> = emptyList()
 
     override fun onCreateView(
@@ -36,6 +40,16 @@ class ClientCartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val cartService = RetrofitClient.getCartService(requireContext())
+        val orderService = RetrofitClient.getOrderService(requireContext())
+        val localStore = CartLocalStorage(requireContext())
+
+        repo = CartRepository(
+            service = cartService,
+            orderService = orderService,
+            localStore = localStore
+        )
+
         setupRecycler()
         loadCartItems()
 
@@ -43,6 +57,8 @@ class ClientCartFragment : Fragment() {
             loadCartItems()
             binding.swipeRefresh.isRefreshing = false
         }
+
+        binding.btnCheckout.setOnClickListener { checkout() }
     }
 
     private fun setupRecycler() {
@@ -60,15 +76,12 @@ class ClientCartFragment : Fragment() {
     }
 
     private fun loadCartItems() {
-        val cartService = RetrofitClient.getCartService(requireContext())
         val localStore = CartLocalStorage(requireContext())
-        val repo = CartRepository(cartService, localStore)
+        val cartId = localStore.getCartId()
 
         binding.progressBar.visibility = View.VISIBLE
 
         lifecycleScope.launch {
-            val cartId = localStore.getCartId()
-
             if (cartId == null) {
                 binding.progressBar.visibility = View.GONE
                 cartAdapter.updateItems(emptyList())
@@ -97,16 +110,16 @@ class ClientCartFragment : Fragment() {
     }
 
     private fun updateCartItemQuantity(item: CartItem, newQty: Int) {
-        // Llamar al PATCH suspend (sin enqueue)  :contentReference[oaicite:2]{index=2}
         val service = RetrofitClient.getCartService(requireContext())
 
         binding.progressBar.visibility = View.VISIBLE
+
         lifecycleScope.launch {
             try {
-                val req = UpdateCartItemRequest(quantity = newQty) // sin unit_price  :contentReference[oaicite:3]{index=3}
-                val resp = service.updateCartItem(itemId = item.id, request = req)
+                val req = UpdateCartItemRequest(quantity = newQty)
+                val resp = service.updateCartItem(item.id, req)
+
                 if (resp.isSuccessful) {
-                    // recargar lista para reflejar qty y total
                     loadCartItems()
                 } else {
                     binding.progressBar.visibility = View.GONE
@@ -124,17 +137,87 @@ class ClientCartFragment : Fragment() {
 
         lifecycleScope.launch {
             try {
-                val response = service.deleteCartItem(itemId)
+                val resp = service.deleteCartItem(itemId)
 
-                if (response.isSuccessful) {
+                if (resp.isSuccessful) {
                     Toast.makeText(requireContext(), "Item eliminado", Toast.LENGTH_SHORT).show()
                     loadCartItems()
                 } else {
                     Toast.makeText(requireContext(), "Error al eliminar", Toast.LENGTH_SHORT).show()
                 }
-
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // ============================================================
+    // 🟩 CREAR ORDEN (CHECKOUT)
+    // ============================================================
+    private fun checkout() {
+
+        lifecycleScope.launch {
+            try {
+                val cartId = CartLocalStorage(requireContext()).getCartId()
+
+                if (cartId == null) {
+                    Toast.makeText(context, "Carrito vacío", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                val subtotal = lastItems.sumOf { (it.unit_price ?: 0.0) * (it.quantity ?: 0) }
+
+                val orderReq = OrderRequest(
+                    items_total = subtotal,
+                    discount_total = 0.0,
+                    grand_total = subtotal,
+                    total = subtotal,
+                    status = "PENDING",
+                    shipping_full_name = "",
+                    shipping_phone = "",
+                    shipping_line1 = "",
+                    shipping_line2 = "",
+                    shipping_city = "",
+                    shipping_state = "",
+                    shipping_postal_code = "",
+                    shipping_country = "",
+                    promotion_code = "",
+                    updated_at = System.currentTimeMillis(),
+                    user_id = 1,
+                    cart_id = cartId,
+                    promotion_id = 0
+                )
+
+                val resp = repo.createOrder(orderReq)
+
+                if (!resp.isSuccessful) {
+                    Toast.makeText(context, "Error creando orden", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                val order = resp.body()
+                if (order == null) {
+                    Toast.makeText(context, "Orden nula", Toast.LENGTH_SHORT).show()
+                    return@launch
+                }
+
+                // Crear order_items
+                lastItems.forEach { cartItem ->
+                    repo.createOrderItem(
+                        OrderItemRequest(
+                            order_id = order.id,
+                            urn_id = cartItem.urn_id ?: 0,
+                            quantity = cartItem.quantity ?: 1,
+                            unit_price = cartItem.unit_price ?: 0.0,
+                            subtotal = (cartItem.quantity ?: 1) * (cartItem.unit_price ?: 0.0)
+                        )
+                    )
+                }
+
+                Toast.makeText(context, "Orden creada correctamente", Toast.LENGTH_SHORT).show()
+
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
