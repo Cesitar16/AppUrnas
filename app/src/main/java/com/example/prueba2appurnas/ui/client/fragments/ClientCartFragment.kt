@@ -6,18 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.databinding.FragmentClientCartBinding
+import com.example.prueba2appurnas.repository.CartLocalStorage
+import com.example.prueba2appurnas.repository.CartRepository
 import com.example.prueba2appurnas.ui.client.adapters.CartAdapter
-import com.example.prueba2appurnas.ui.client.viewModels.CartViewModel
+import kotlinx.coroutines.launch
 
 class ClientCartFragment : Fragment() {
 
     private var _binding: FragmentClientCartBinding? = null
     private val binding get() = _binding!!
 
-    private val cartViewModel: CartViewModel by viewModels()
     private lateinit var cartAdapter: CartAdapter
 
     override fun onCreateView(
@@ -31,32 +33,16 @@ class ClientCartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupRecyclerView()
-
-        cartViewModel.loadCart(requireContext())
-
-        cartViewModel.cartItems.observe(viewLifecycleOwner) { items ->
-            cartAdapter.submitList(items)
-            updateTotal(items.sumOf { it.unit_price * it.quantity })
-        }
-
-        cartViewModel.isLoading.observe(viewLifecycleOwner) { loading ->
-            binding.progressBar.visibility = if (loading) View.VISIBLE else View.GONE
-        }
-
-        cartViewModel.errorMessage.observe(viewLifecycleOwner) { error ->
-            if (error != null) {
-                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
-            }
-        }
+        setupRecycler()
+        loadCartItems()
 
         binding.swipeRefresh.setOnRefreshListener {
-            cartViewModel.loadCart(requireContext())
+            loadCartItems()
             binding.swipeRefresh.isRefreshing = false
         }
     }
 
-    private fun setupRecyclerView() {
+    private fun setupRecycler() {
         cartAdapter = CartAdapter()
         binding.recyclerCart.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -64,8 +50,37 @@ class ClientCartFragment : Fragment() {
         }
     }
 
-    private fun updateTotal(total: Double) {
-        binding.txtTotal.text = "Total: $${String.format("%.2f", total)}"
+    private fun loadCartItems() {
+        val cartService = RetrofitClient.getCartService(requireContext())
+        val localStore = CartLocalStorage(requireContext())
+        val repo = CartRepository(cartService, localStore)
+
+        binding.progressBar.visibility = View.VISIBLE
+
+        lifecycleScope.launch {
+            val cartId = localStore.getCartId()
+
+            if (cartId == null) {
+                binding.progressBar.visibility = View.GONE
+                Toast.makeText(requireContext(), "Tu carrito está vacío", Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+
+            val response = repo.getItems(cartId)
+
+            binding.progressBar.visibility = View.GONE
+
+            if (response.isSuccessful) {
+                val items = response.body() ?: emptyList()
+                cartAdapter.submitList(items)
+
+                val total = items.sumOf { it.unit_price * it.quantity }
+                binding.txtTotal.text = "Total: $${String.format("%.2f", total)}"
+
+            } else {
+                Toast.makeText(requireContext(), "Error cargando carrito", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onDestroyView() {

@@ -7,61 +7,46 @@ import retrofit2.http.*
 
 interface CartService {
 
-    // ============================================================
-    // CART
-    // ============================================================
+    // ===================== CART =====================
 
-    @POST("/cart")
+    @POST("cart")
     suspend fun createCart(
         @Body request: CreateCartRequest
     ): Response<Cart>
 
-    @GET("/cart")
-    suspend fun getAllCarts(): Response<List<Cart>>
-
-    @GET("/cart/{cart_id}")
+    @GET("cart/{cart_id}")
     suspend fun getCartById(
         @Path("cart_id") cartId: Int
     ): Response<Cart>
 
-    @PATCH("/cart/{cart_id}")
+    @PATCH("cart/{cart_id}")
     suspend fun updateCart(
         @Path("cart_id") cartId: Int,
         @Body request: UpdateCartRequest
     ): Response<Cart>
 
-    @DELETE("/cart/{cart_id}")
-    suspend fun deleteCart(
-        @Path("cart_id") cartId: Int
-    ): Response<Unit>
 
+    // ===================== CART ITEMS =====================
 
-    // ============================================================
-    // CART ITEMS
-    // ============================================================
-
-    @POST("/cart_item")
-    fun addItem(
+    @POST("cart_item")
+    suspend fun addItem(
         @Body request: AddToCartRequest
-    ): Call<CartItem>
-
-    @GET("/cart_item")
-    fun getCartItems(): Call<List<CartItem>>
-
-    @GET("/cart_item/{cart_item_id}")
-    suspend fun getCartItemById(
-        @Path("cart_item_id") itemId: Int
     ): Response<CartItem>
 
-    @PATCH("/cart_item/{cart_item_id}")
+    @GET("cart_item")
+    suspend fun getCartItemsForCart(
+        @Query("cart_id") cartId: Int
+    ): Response<List<CartItem>>
+
+    @PATCH("cart_item/{id}")
     suspend fun updateCartItem(
-        @Path("cart_item_id") itemId: Int,
+        @Path("id") itemId: Int,
         @Body request: UpdateCartItemRequest
     ): Response<CartItem>
 
-    @DELETE("/cart_item/{cart_item_id}")
+    @DELETE("cart_item/{id}")
     suspend fun deleteCartItem(
-        @Path("cart_item_id") itemId: Int
+        @Path("id") itemId: Int
     ): Response<Unit>
-
 }
+

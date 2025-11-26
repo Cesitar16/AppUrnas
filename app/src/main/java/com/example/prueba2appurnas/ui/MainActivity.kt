@@ -97,11 +97,13 @@ class MainActivity : AppCompatActivity() {
                     return@launch
                 }
 
-                // Guardar email del usuario
+                // GUARDAR DATOS IMPORTANTES
+                tokenManager.saveUserId(user.id)
                 tokenManager.saveUserEmail(user.email)
 
                 // Revisar rol
                 val rol = user.rol.lowercase()
+
 
                 when (rol) {
                     "admin" ->

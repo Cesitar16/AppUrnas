@@ -9,6 +9,10 @@ class TokenManager(private val context: Context) {
         private const val PREFS_NAME = "MyAppPrefs"
         private const val KEY_AUTH_TOKEN = "authToken"
         private const val KEY_USER_EMAIL = "userEmail"
+
+        private const val KEY_USER_ID = "userId"
+
+
     }
 
     private val prefs: SharedPreferences =
@@ -44,4 +48,14 @@ class TokenManager(private val context: Context) {
     fun clear() {
         prefs.edit().clear().apply()
     }
+
+    fun saveUserId(id: Int) {
+        prefs.edit().putInt("USER_ID", id).apply()
+    }
+
+    fun getUserId(): Int {
+        return prefs.getInt("USER_ID", -1)  // -1 si no existe
+    }
+
+
 }

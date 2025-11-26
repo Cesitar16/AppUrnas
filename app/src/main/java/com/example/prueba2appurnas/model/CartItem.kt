@@ -8,7 +8,5 @@ data class CartItem(
     val updated_at: Long?,
     val cart_id: Int,
     val urn_id: Int,
-
-    // EL CAMPO DEL ADDON DE XANO
-    val _urn: Urna?        // <-- aquí llega la urna COMPLETA del addon
+    val _urn: Urna? = null
 )

@@ -50,17 +50,32 @@ class RegisterActivity : AppCompatActivity() {
                 val response = api.signup(SignupRequest(name, email, password))
 
                 if (response.isSuccessful) {
-                    response.body()?.let {
-                        tokenManager.saveToken(it.authToken)
+                    val body = response.body()
+
+                    if (body != null) {
+
+                        // GUARDAR TOKEN
+                        tokenManager.saveToken(body.authToken)
+
+                        // GUARDAR USER (id + email)
+                        body.user?.let { user ->
+                            tokenManager.saveUserId(user.id)
+                            tokenManager.saveUserEmail(user.email)
+                        }
+
+                        // IR A HOME
                         startActivity(Intent(this@RegisterActivity, HomeActivity::class.java))
                         finish()
                     }
+
                 } else {
                     Toast.makeText(this@RegisterActivity, "Error al crear la cuenta", Toast.LENGTH_SHORT).show()
                 }
+
             } catch (e: Exception) {
                 Toast.makeText(this@RegisterActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
+
 }

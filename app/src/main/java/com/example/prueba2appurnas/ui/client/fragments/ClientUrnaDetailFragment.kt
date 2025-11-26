@@ -6,17 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.prueba2appurnas.api.RetrofitClient
 import com.example.prueba2appurnas.api.TokenManager
 import com.example.prueba2appurnas.databinding.FragmentClientUrnaDetailBinding
-import com.example.prueba2appurnas.model.AddToCartRequest
-import com.example.prueba2appurnas.model.CartItem
 import com.example.prueba2appurnas.model.Urna
 import com.example.prueba2appurnas.model.UrnaImage
+import com.example.prueba2appurnas.repository.CartLocalStorage
+import com.example.prueba2appurnas.repository.CartRepository
 import com.example.prueba2appurnas.ui.UrnaImageAdapter
 import com.example.prueba2appurnas.util.NetUtils
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -76,7 +78,6 @@ class ClientUrnaDetailFragment : Fragment() {
     }
 
     private fun bindData(urna: Urna) {
-
         binding.txtUrnaNameClient.text = urna.name
         binding.txtUrnaPriceClient.text = "$${urna.price ?: 0.0}"
 
@@ -95,7 +96,6 @@ class ClientUrnaDetailFragment : Fragment() {
         binding.txtUrnaDescriptionClient.text =
             urna.detailed_description ?: urna.short_description ?: "-"
 
-        // Imagen principal
         val imgUrl = urna.image_url?.url ?: urna.image_url?.path?.let {
             NetUtils.buildAbsoluteUrl(it)
         }
@@ -141,32 +141,43 @@ class ClientUrnaDetailFragment : Fragment() {
 
     private fun addToCart() {
         val urna = urnaObject ?: return
-        val cartService = RetrofitClient.getCartService(requireContext())
 
-        val request = AddToCartRequest(
-            cart_id = 1,
-            urn_id = urnaId,
-            quantity = 1,
-            unit_price = urna.price ?: 0.0
-        )
+        val service = RetrofitClient.getCartService(requireContext())
+        val localStore = CartLocalStorage(requireContext())
+        val repo = CartRepository(service, localStore)
 
-        cartService.addItem(request).enqueue(object : Callback<CartItem> {
-            override fun onResponse(call: Call<CartItem>, response: Response<CartItem>) {
-                Toast.makeText(
-                    requireContext(),
-                    if (response.isSuccessful) "Agregado al carrito ✔" else "Error al agregar",
-                    Toast.LENGTH_SHORT
-                ).show()
+        val userId = tokenManager.getUserId()
+
+        if (userId == -1) {
+            Toast.makeText(requireContext(), "Error: no se encontró el usuario", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        lifecycleScope.launch {
+
+            val cartId = repo.getOrCreateCart(userId)
+
+            if (cartId == null) {
+                Toast.makeText(requireContext(), "Error creando carrito", Toast.LENGTH_SHORT).show()
+                return@launch
             }
 
-            override fun onFailure(call: Call<CartItem>, t: Throwable) {
-                Toast.makeText(requireContext(), "Error de conexión", Toast.LENGTH_SHORT).show()
+            val response = repo.addItem(
+                cartId = cartId,
+                urnId = urnaId,
+                price = urna.price ?: 0.0
+            )
+
+            if (response.isSuccessful) {
+                Toast.makeText(requireContext(), "Agregado al carrito ✔", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Error al agregar", Toast.LENGTH_SHORT).show()
             }
-        })
+        }
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         _binding = null
+        super.onDestroyView()
     }
 }
