@@ -17,4 +17,10 @@
         android:id="@+id/nav_profile"
         android:icon="@drawable/ic_user" android:title="Perfil" />
 
+    <item
+        android:id="@+id/nav_admin_orders"
+        android:title="Órdenes"
+        android:icon="@drawable/ic_sales"/>
+
+
 </menu>

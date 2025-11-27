@@ -6,6 +6,7 @@ import com.example.prueba2appurnas.model.AddToCartRequest
 import com.example.prueba2appurnas.model.CreateCartRequest
 import com.example.prueba2appurnas.model.OrderItemRequest
 import com.example.prueba2appurnas.model.OrderRequest
+import com.example.prueba2appurnas.model.UpdateOrderStatusRequest
 
 class CartRepository(
     private val service: CartService,
@@ -13,7 +14,6 @@ class CartRepository(
     private val localStore: CartLocalStorage
 ) {
 
-    // Obtener o crear carrito
     suspend fun getOrCreateCart(userId: Int): Int? {
 
         val savedId = localStore.getCartId()
@@ -38,7 +38,6 @@ class CartRepository(
         return cartId
     }
 
-    // Agregar un item
     suspend fun addItem(cartId: Int, urnId: Int, price: Double) =
         service.addItem(
             AddToCartRequest(
@@ -50,15 +49,22 @@ class CartRepository(
             )
         )
 
-    // Obtener items
     suspend fun getItems(cartId: Int) =
         service.getCartItemsForCart(cartId)
 
-    // Crear orden
     suspend fun createOrder(request: OrderRequest) =
         orderService.createOrder(request)
 
-    // Crear items de orden
     suspend fun createOrderItem(request: OrderItemRequest) =
         orderService.createOrderItem(request)
+
+    // FIX: AHORA ENVÍA UN OBJETO, NO UN MAP
+    suspend fun updateOrderStatus(id: Int, status: String) =
+        orderService.updateOrderStatus(
+            id,
+            UpdateOrderStatusRequest(
+                status = status,
+                updated_at = System.currentTimeMillis()
+            )
+        )
 }
