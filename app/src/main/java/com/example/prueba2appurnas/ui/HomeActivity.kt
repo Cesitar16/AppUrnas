@@ -6,10 +6,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.example.prueba2appurnas.R
 import com.example.prueba2appurnas.databinding.ActivityHomeBinding
-import com.example.prueba2appurnas.ui.fragments.AddUrnaFragment // Nombres actualizados
-import com.example.prueba2appurnas.ui.fragments.UrnasFragment   // Nombres actualizados
+import com.example.prueba2appurnas.ui.fragments.AddUrnaFragment
+import com.example.prueba2appurnas.ui.fragments.UrnasFragment
 import com.example.prueba2appurnas.ui.fragments.ProfileFragment
 import com.example.prueba2appurnas.ui.fragments.AdminUsersFragment
+import com.example.prueba2appurnas.ui.admin.AdminOrdersFragment
 
 class HomeActivity : AppCompatActivity() {
 
@@ -21,41 +22,57 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.bottomNavigation.setOnItemSelectedListener { item ->
-            var selectedFragment: Fragment? = null
             when (item.itemId) {
-                R.id.nav_urnas -> selectedFragment = UrnasFragment()
-                R.id.nav_add_urna -> selectedFragment = AddUrnaFragment()
-                R.id.nav_profile -> selectedFragment = ProfileFragment()
-                R.id.nav_users -> selectedFragment = AdminUsersFragment()
-                R.id.nav_profile -> selectedFragment = ProfileFragment()
-            }
-            if (selectedFragment != null) {
-                supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
-                loadFragment(selectedFragment, false)
+
+                R.id.nav_urnas -> {
+                    loadCleanFragment(UrnasFragment())
+                }
+
+                R.id.nav_add_urna -> {
+                    loadCleanFragment(AddUrnaFragment())
+                }
+
+                R.id.nav_profile -> {
+                    loadCleanFragment(ProfileFragment())
+                }
+
+                R.id.nav_users -> {
+                    loadCleanFragment(AdminUsersFragment())
+                }
+
+                R.id.nav_admin_orders -> {
+                    // Aquí no limpiamos el backstack para poder volver atrás
+                    loadFragment(AdminOrdersFragment(), addToBackStack = true)
+                }
             }
             true
         }
 
-        // Carga inicial sin añadir a la pila
+        // Primera carga
         if (savedInstanceState == null) {
-            binding.bottomNavigation.selectedItemId = R.id.nav_urnas // Dispara el listener y carga UrnasFragment
+            binding.bottomNavigation.selectedItemId = R.id.nav_urnas
         }
     }
 
     /**
-     * Reemplaza el contenido del FrameLayout con el fragmento especificado.
+     * Limpia el backstack y carga un fragment sin añadirlo atrás.
      */
-    private fun loadFragment(fragment: Fragment, addToBackStack: Boolean) { // Modificado para aceptar parámetro
+    private fun loadCleanFragment(fragment: Fragment) {
+        supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+        loadFragment(fragment, addToBackStack = false)
+    }
+
+    /**
+     * Reemplaza el fragmento, opcionalmente añadiéndolo al backstack.
+     */
+    private fun loadFragment(fragment: Fragment, addToBackStack: Boolean) {
         val transaction = supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)
 
         if (addToBackStack) {
-            transaction.addToBackStack(null) // Nombre opcional para la transacción
+            transaction.addToBackStack(null)
         }
-        // No necesitamos else, si no se añade, simplemente se reemplaza
 
         transaction.commit()
     }
-
-    // --- NO HAY LÓGICA DE fetchUrnas, updateDashboard, NI setupRecyclerView AQUÍ ---
 }
